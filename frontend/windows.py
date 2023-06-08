@@ -23,6 +23,8 @@ class MainWin(QMainWindow, Ui_MainWindow):
 
         self.initSignalSlots()
 
+        self.file_path = None
+
     def initSignalSlots(self):
         self.toHomeBtn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
         self.toScannerBtn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(2))
@@ -38,9 +40,6 @@ class MainWin(QMainWindow, Ui_MainWindow):
         self.questionLastBtn.clicked.connect(lambda: self.lastPage('question'))
         self.questionJumpBtn.clicked.connect(lambda: self.jumpPage('question'))
 
-        self.uploadBtn.clicked.connect(self.uploadFile)
-
-
         self.questionPage.setText('1 / 10')  # debug use
 
     def showInfo(self, msg):
@@ -54,11 +53,12 @@ class MainWin(QMainWindow, Ui_MainWindow):
 
     # SECTION: Question Page
     def getQuestionSearchKey(self):
+        content = self.searchQuestionContentEdit.text()
         subject = self.searchQuestionSubjectEdit.text()
         year = self.searchQuestionYearEdit.text()
         type = self.searchQuestionTypeEdit.text()
 
-        return subject, year, type
+        return content, subject, year, type
 
     def getSelectedQuestionInfo(self):
         row = self.questionTbl.currentRow()
@@ -78,12 +78,6 @@ class MainWin(QMainWindow, Ui_MainWindow):
         else:
             self.questionNumLbl.setText(f'查询结果：共0条数据')
 
-    def showQuestionTime(self, time):
-        text = self.questionNumLbl.text()
-        if time:
-            self.questionNumLbl.setText(text + f'; 搜索用时：{time}毫秒')
-        else:
-            self.questionNumLbl.setText(text + f'; 搜索用时：0.000毫秒')
 
     def updateQuestionTable(self, table):
         assert table is not None
@@ -91,7 +85,7 @@ class MainWin(QMainWindow, Ui_MainWindow):
         self.questionTbl.clearContents()
         try:
             for i, row in enumerate(table):
-                # id, name, author, press, release_date, ISBN, stock
+                # row: (id, content, subject, year, type, answer)
                 self.questionTbl.insertRow(i)
                 self.questionTbl.setItem(i, 0, QTableWidgetItem(str(row[0])))
                 self.questionTbl.setItem(i, 1, QTableWidgetItem(row[1]))
@@ -99,15 +93,52 @@ class MainWin(QMainWindow, Ui_MainWindow):
                 self.questionTbl.setItem(i, 3, QTableWidgetItem(row[3]))
                 self.questionTbl.setItem(i, 4, QTableWidgetItem(str(row[4])))
                 self.questionTbl.setItem(i, 5, QTableWidgetItem(row[5]))
-                self.questionTbl.setItem(i, 6, QTableWidgetItem(str(row[6])))
         except Exception as e:
             print(e)
 
     # SECTION: Scanner Page
-    def uploadFile(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, '选择文件', '', '*.txt;;*.doc;;*.docx;;*.pdf;;All Files (*)')
-        if file_path:
-            self.uploadDisplay.setText(file_path)
+
+    def updateLexemeTable(self, table):
+        assert table is not None
+        self.lexemeTbl.setRowCount(0)
+        self.lexemeTbl.clearContents()
+        try:
+            for i, row in enumerate(table):
+                # row: (lexeme, type)
+                self.lexemeTbl.insertRow(i)
+                self.lexemeTbl.setItem(i, 0, QTableWidgetItem(row[0]))
+                self.lexemeTbl.setItem(i, 1, QTableWidgetItem(row[1]))
+        except Exception as e:
+            print(e)
+
+    # SECTION: Parser Page
+
+    def updateParserTree(self, tree):
+        assert tree is not None
+        self.parserTree.clear()
+
+
+    # SECTION: Syntax Page
+
+    def updateSyntaxTable(self, table):
+        assert table is not None
+        self.syntaxTbl.setRowCount(0)
+        self.syntaxTbl.clearContents()
+        try:
+            for i, row in enumerate(table):
+                # row: (num, content, subject, year, type, answer)
+                self.syntaxTbl.insertRow(i)
+                self.syntaxTbl.setItem(i, 0, QTableWidgetItem(str(row[0])))
+                self.syntaxTbl.setItem(i, 1, QTableWidgetItem(row[1]))
+                self.syntaxTbl.setItem(i, 2, QTableWidgetItem(row[2]))
+                self.syntaxTbl.setItem(i, 3, QTableWidgetItem(row[3]))
+                self.syntaxTbl.setItem(i, 4, QTableWidgetItem(str(row[4])))
+                self.syntaxTbl.setItem(i, 5, QTableWidgetItem(row[5]))
+        except Exception as e:
+            print(e)
+
+
+
 
     # SECTION: 翻页
     def firstPage(self, type):
