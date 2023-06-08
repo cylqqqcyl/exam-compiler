@@ -679,6 +679,22 @@ background-color: rgba(255, 255, 255, 0);</string>
             <number>20</number>
            </property>
            <item>
+            <widget class="QLineEdit" name="searchQuestionContentEdit">
+             <property name="font">
+              <font>
+               <family>微软雅黑</family>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="placeholderText">
+              <string>题目内容</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QLineEdit" name="searchQuestionSubjectEdit">
              <property name="font">
               <font>
@@ -797,7 +813,7 @@ background-color: rgba(255, 255, 255, 0);</string>
            </attribute>
            <column>
             <property name="text">
-             <string>题号</string>
+             <string>题目编号</string>
             </property>
            </column>
            <column>
@@ -1076,21 +1092,16 @@ background-color: rgba(255, 255, 255, 0);</string>
           </widget>
          </item>
          <item>
-          <widget class="QTableWidget" name="tableWidget">
+          <widget class="QTableWidget" name="lexemeTbl">
            <attribute name="horizontalHeaderMinimumSectionSize">
-            <number>365</number>
+            <number>568</number>
            </attribute>
            <attribute name="horizontalHeaderDefaultSectionSize">
-            <number>365</number>
+            <number>568</number>
            </attribute>
            <column>
             <property name="text">
              <string>单词</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>二元序列</string>
             </property>
            </column>
            <column>
@@ -1123,6 +1134,13 @@ background-color: rgba(255, 255, 255, 0);</string>
           </widget>
          </item>
          <item>
+          <widget class="QLineEdit" name="uploadDisplay_2">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
           <layout class="QGridLayout" name="gridLayout_2">
            <property name="spacing">
             <number>20</number>
@@ -1148,18 +1166,18 @@ background-color: rgba(255, 255, 255, 0);</string>
               </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBox">
+              <widget class="QLabel" name="scannerCheck">
                <property name="font">
                 <font>
                  <family>微软雅黑</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">color:#ff0000;</string>
+               </property>
                <property name="text">
                 <string>未完成</string>
-               </property>
-               <property name="checkable">
-                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -1209,7 +1227,218 @@ background-color: rgba(255, 255, 255, 0);</string>
           </widget>
          </item>
          <item>
-          <widget class="QTreeWidget" name="parserTree"/>
+          <widget class="QTreeWidget" name="parserTree">
+           <column>
+            <property name="text">
+             <string notr="true">试卷</string>
+            </property>
+           </column>
+           <item>
+            <property name="text">
+             <string>试卷头</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>考试时间</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>数字</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>年</string>
+              </property>
+             </item>
+            </item>
+            <item>
+             <property name="text">
+              <string>考试内容</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>试卷</string>
+             </property>
+            </item>
+           </item>
+           <item>
+            <property name="text">
+             <string>题型列表</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>题型</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>题型号</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>题目类型</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>填空题头</string>
+               </property>
+               <item>
+                <property name="text">
+                 <string>填空题：</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>填空题列表</string>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>填空题</string>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>题号</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>填空题内容</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>填空题答案</string>
+                  </property>
+                 </item>
+                </item>
+               </item>
+              </item>
+             </item>
+            </item>
+            <item>
+             <property name="text">
+              <string>题型</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>题型号</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>题目类型</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>选择题头</string>
+               </property>
+               <item>
+                <property name="text">
+                 <string>选择题：</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>选择题列表</string>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>选择题</string>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>题号</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>选择题内容</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>选项列表</string>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>选项</string>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>A.</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>选项内容</string>
+                    </property>
+                   </item>
+                  </item>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>选择题答案</string>
+                  </property>
+                 </item>
+                </item>
+               </item>
+              </item>
+             </item>
+            </item>
+            <item>
+             <property name="text">
+              <string>题型</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>题型号</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>题目类型</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>判断题头</string>
+               </property>
+               <item>
+                <property name="text">
+                 <string>判断题：</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>判断题列表</string>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>判断题</string>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>题号</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>题目内容</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>判断题答案</string>
+                  </property>
+                 </item>
+                </item>
+               </item>
+              </item>
+             </item>
+            </item>
+           </item>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -1227,6 +1456,13 @@ background-color: rgba(255, 255, 255, 0);</string>
            </property>
            <property name="text">
             <string>语义分析</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="uploadDisplay_3">
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -1251,18 +1487,18 @@ background-color: rgba(255, 255, 255, 0);</string>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_2">
+            <widget class="QLabel" name="scannerCheck_2">
              <property name="font">
               <font>
                <family>微软雅黑</family>
                <pointsize>12</pointsize>
               </font>
              </property>
+             <property name="styleSheet">
+              <string notr="true">color:#ff0000;</string>
+             </property>
              <property name="text">
               <string>未完成</string>
-             </property>
-             <property name="checkable">
-              <bool>false</bool>
              </property>
             </widget>
            </item>
@@ -1280,6 +1516,9 @@ background-color: rgba(255, 255, 255, 0);</string>
                <bold>false</bold>
               </font>
              </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
              <property name="text">
               <string>语法分析状态</string>
              </property>
@@ -1289,18 +1528,18 @@ background-color: rgba(255, 255, 255, 0);</string>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_3">
+            <widget class="QLabel" name="parserCheck">
              <property name="font">
               <font>
                <family>微软雅黑</family>
                <pointsize>12</pointsize>
               </font>
              </property>
+             <property name="styleSheet">
+              <string notr="true">color:#ff0000;</string>
+             </property>
              <property name="text">
               <string>未完成</string>
-             </property>
-             <property name="checkable">
-              <bool>false</bool>
              </property>
             </widget>
            </item>
@@ -1468,7 +1707,7 @@ p, li { white-space: pre-wrap; }
  </widget>
  <resources>
   <include location="resources/resources.qrc"/>
-  <include location="../../../../.designer/backup/resources/resources.qrc"/>
+  <include location="resources/resources.qrc"/>
  </resources>
  <connections/>
 </ui>
