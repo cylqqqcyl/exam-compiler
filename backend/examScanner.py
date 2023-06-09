@@ -20,6 +20,7 @@ t_QUESTIONHEADER = r'[一二三四五六七八九十]、.{2}题[:：]'
 t_ignore = ' \t\n'
 
 def t_error(t):
+    # 报错
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
 
@@ -36,11 +37,12 @@ class Scanner:
         lexer.input(content)
         tokens = []
         while True:
+            # 读取一个token
             tok = lexer.token()
             if not tok:
                 break
             tokens.append((tok.value, tok.type))
-
+        # 返回token列表
         return tokens
 
 if __name__ == "__main__":
