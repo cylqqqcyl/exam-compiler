@@ -1,34 +1,50 @@
 import re
+import ply.lex as lex
 
-class Parser:
+tokens = (
+    'QUESTION',
+    'OPTION',
+    'ANSWER',
+    'HEADER',
+    'QUESTIONHEADER',
+)
+
+# 定义每种单词类型的匹配规则
+t_QUESTION = r'\n*\d+\. .*?[.。？?！!]'
+t_OPTION = r'[a-zA-Z]{1}\.\w+\ *'
+t_ANSWER = r'答案[:：].*'
+t_HEADER = r'\d{4}年 .*?试卷'
+t_QUESTIONHEADER = r'[一二三四五六七八九十]、.{2}题[:：]'
+
+# 忽略空白和换行符
+t_ignore = ' \t\n'
+
+def t_error(t):
+    print("Illegal character '%s'" % t.value[0])
+    t.lexer.skip(1)
+
+lexer = lex.lex()
+
+class Scanner:
     def __init__(self, filepath):
         self.filepath = filepath
 
-    def parse(self):
+    def scan(self):
         with open(self.filepath, 'r', encoding='utf-8') as file:
             content = file.read()
 
-        # 试卷头部信息的匹配规则
-        header_pattern = re.compile(r'试卷名称：(.*?)科目：(.*?)年级：(.*?)日期：(.*?)\n')
-        header_match = header_pattern.search(content)
-        header_info = header_match.groups() if header_match else ("", "", "", "")
+        lexer.input(content)
+        tokens = []
+        while True:
+            tok = lexer.token()
+            if not tok:
+                break
+            tokens.append((tok.value, tok.type))
 
-        # 题目的匹配规则
-        question_pattern = re.compile(r'\n(\d+)\. \[(.*?)\] (.*?) 答案：(.*?) 分值：(\d+)')
-        questions = question_pattern.findall(content)
-
-        # 选择题选项的匹配规则
-        option_pattern = re.compile(r'\n\(\w+\) (.*?)\n')
-        options = option_pattern.findall(content)
-
-        # 返回解析结果
-        return {
-            'header': header_info,
-            'questions': questions,
-            'options': options,
-        }
+        return tokens
 
 if __name__ == "__main__":
-    parser = Parser('test_paper.txt')
-    result = parser.parse()
+    scanner = Scanner('../test/test.txt')
+    result = scanner.scan()
     print(result)
+    print(type(result))

@@ -12,16 +12,23 @@ import threading
 import math
 import datetime
 from backend.ConnDB import Database
+from backend.examScanner import Scanner
 
 class ScannerThread(QThread):
-    scannerSignal = pyqtSignal(bool)
+    scannerSignal = pyqtSignal(list)
     def __init__(self, file_path, parent=None):
         super(ScannerThread, self).__init__(parent)
         self.file_path = file_path
 
     def run(self):
-        self.scannerSignal.emit(True)
-        # TODO: 调用后端的扫描器
+        try:
+            scanner = Scanner(self.file_path)
+            result = scanner.scan()
+            self.scannerSignal.emit(result)
+        except Exception as e:
+            print(e)
+            self.scannerSignal.emit([])
+
 
 class ParserThread(QThread):
     parserSignal = pyqtSignal(bool)
@@ -147,8 +154,9 @@ class Client:
         self.scannerThread.scannerSignal.connect(self.scanner_callback)
         self.scannerThread.start()
 
-    def scanner_callback(self, success):
-        if success:
+    def scanner_callback(self, result):
+        if result:
+            #前端显示
             QMessageBox.information(self.mainWin, '提示', '词法分析完成！')
             self.mainWin.scannerCheck.setText('已完成')
             self.mainWin.scannerCheck.setStyleSheet("color: #00ff00;")
@@ -157,6 +165,8 @@ class Client:
             self.mainWin.startScannerBtn.setEnabled(True)
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
+            #更新词法分析结果
+            self.mainWin.updateLexemeTable(result)
         else:
             QMessageBox.warning(self.mainWin, '警告', '词法分析失败！')
 
