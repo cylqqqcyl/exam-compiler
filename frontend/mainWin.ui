@@ -793,6 +793,9 @@ background-color: rgba(255, 255, 255, 0);</string>
            <property name="styleSheet">
             <string notr="true">background-color: rgba(255, 255, 255, 150);</string>
            </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
            <property name="selectionBehavior">
             <enum>QAbstractItemView::SelectRows</enum>
            </property>
@@ -1093,6 +1096,15 @@ background-color: rgba(255, 255, 255, 0);</string>
          </item>
          <item>
           <widget class="QTableWidget" name="lexemeTbl">
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
            <attribute name="horizontalHeaderMinimumSectionSize">
             <number>568</number>
            </attribute>
@@ -1103,10 +1115,22 @@ background-color: rgba(255, 255, 255, 0);</string>
             <property name="text">
              <string>单词</string>
             </property>
+            <property name="font">
+             <font>
+              <family>微软雅黑</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
            </column>
            <column>
             <property name="text">
              <string>类型</string>
+            </property>
+            <property name="font">
+             <font>
+              <family>微软雅黑</family>
+              <pointsize>12</pointsize>
+             </font>
             </property>
            </column>
           </widget>
@@ -1570,6 +1594,9 @@ background-color: rgba(255, 255, 255, 0);</string>
            </property>
            <property name="styleSheet">
             <string notr="true">background-color: rgba(255, 255, 255, 150);</string>
+           </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
            </property>
            <property name="selectionBehavior">
             <enum>QAbstractItemView::SelectRows</enum>
