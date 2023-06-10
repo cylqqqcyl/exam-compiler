@@ -142,11 +142,18 @@ def parse_ast(node): # 将AST转为字典
     elif node[0] == 'questions':
         return [parse_ast(child) for child in node[1:]]
     elif node[0] == 'question':
-        return {
-            'type': 'question',
-            'content': node[1],
-            'answer': parse_ast(node[2])
-        }
+        if len(node) == 3:
+            return {
+                'type': 'question',
+                'content': node[1],
+                'answer': parse_ast(node[2])
+            }
+        else:
+            return {
+                'type': 'question',
+                'content': node[1],
+                'answer': {**parse_ast(node[2]),**parse_ast(node[3])}
+            }
     elif node[0] == 'answer':
         return {
             'type': 'answer',
