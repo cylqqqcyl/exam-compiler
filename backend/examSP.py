@@ -142,18 +142,19 @@ def parse_ast(node): # 将AST转为字典
     elif node[0] == 'questions':
         return [parse_ast(child) for child in node[1:]]
     elif node[0] == 'question':
-        if len(node) == 3:
-            return {
-                'type': 'question',
-                'content': node[1],
-                'answer': parse_ast(node[2])
-            }
-        else:
-            return {
-                'type': 'question',
-                'content': node[1],
-                'answer': {**parse_ast(node[2]),**parse_ast(node[3])}
-            }
+        content = node[1]
+        answer = parse_ast(node[2])
+        # Check if the next node is 'options'
+        if len(node) > 3 and node[2][0] == 'options':
+            options = parse_ast(node[2])
+            answer = parse_ast(node[3])
+            # Append options to the question content
+            content += ' ' + ' '.join(options['choices'])
+        return {
+            'type': 'question',
+            'content': content,
+            'answer': answer
+        }
     elif node[0] == 'answer':
         return {
             'type': 'answer',
@@ -162,7 +163,7 @@ def parse_ast(node): # 将AST转为字典
     elif node[0] == 'options':
         return {
             'type': 'options',
-            'choices': node[1:]
+            'choices': filter(lambda x: x != 'options', node[1:])
         }
     else:
         return node
@@ -178,7 +179,7 @@ def extract_questions(elements, paper_title, question_type=None): # 从AST中提
                 question_number = elements.get("content").split(".")[0] if "content" in elements else None
                 questions.append([question_number, question_content, paper_title, question_type, question_answer])
             if key == "type" and value == "questionheader":  # 找到题型的字典
-                question_type = elements.get("title")
+                question_type = elements.get("title").split("、")[-1][:-1] # 掐头去尾只留下题型
             elif isinstance(value, dict) or isinstance(value, list):
                 questions.extend(extract_questions(value, paper_title, question_type)) # 递归遍历子字典或列表
     elif isinstance(elements, list):
