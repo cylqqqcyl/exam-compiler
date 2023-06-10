@@ -1,0 +1,188 @@
+PLY: PARSE DEBUG START
+
+State  : 0
+Stack  : . LexToken(HEADER,'2023年基本语文常识试卷',1,0)
+Action : Shift and goto state 2
+
+State  : 2
+Stack  : HEADER . LexToken(QUESTIONHEADER,'一、填空题:',1,14)
+Action : Shift and goto state 5
+
+State  : 5
+Stack  : HEADER QUESTIONHEADER . LexToken(QUESTION,'1.昨天我去了一家____店买手表。',1,21)
+Action : Shift and goto state 9
+
+State  : 9
+Stack  : HEADER QUESTIONHEADER QUESTION . LexToken(ANSWER,'答案:钟表',1,39)
+Action : Shift and goto state 14
+
+State  : 14
+Stack  : HEADER QUESTIONHEADER QUESTION ANSWER . LexToken(QUESTION,'2.我家的____是一只小狗。',1,45)
+Action : Reduce rule [answer -> ANSWER] with ['答案:钟表'] and goto state 12
+Result : <tuple @ 0x14d15b16840> (('answer', '答案:钟表'))
+
+State  : 12
+Stack  : HEADER QUESTIONHEADER QUESTION answer . LexToken(QUESTION,'2.我家的____是一只小狗。',1,45)
+Action : Reduce rule [question -> QUESTION answer] with [<str @ 0x14d15b277a0>,<tuple @ 0x14d15b16840>] and goto state 8
+Result : <tuple @ 0x14d15b31680> (('question', '1.昨天我去了一家____店买手表。', ('ans ...)
+
+State  : 8
+Stack  : HEADER QUESTIONHEADER question . LexToken(QUESTION,'2.我家的____是一只小狗。',1,45)
+Action : Shift and goto state 9
+
+State  : 9
+Stack  : HEADER QUESTIONHEADER question QUESTION . LexToken(ANSWER,'答案:宠物',1,60)
+Action : Shift and goto state 14
+
+State  : 14
+Stack  : HEADER QUESTIONHEADER question QUESTION ANSWER . LexToken(QUESTIONHEADER,'二、判断题:',1,66)
+Action : Reduce rule [answer -> ANSWER] with ['答案:宠物'] and goto state 12
+Result : <tuple @ 0x14d15b16480> (('answer', '答案:宠物'))
+
+State  : 12
+Stack  : HEADER QUESTIONHEADER question QUESTION answer . LexToken(QUESTIONHEADER,'二、判断题:',1,66)
+Action : Reduce rule [question -> QUESTION answer] with [<str @ 0x14d15b278f0>,<tuple @ 0x14d15b16480>] and goto state 8
+Result : <tuple @ 0x14d16581640> (('question', '2.我家的____是一只小狗。', ('answer ...)
+
+State  : 8
+Stack  : HEADER QUESTIONHEADER question question . LexToken(QUESTIONHEADER,'二、判断题:',1,66)
+Action : Reduce rule [questions -> question] with [<tuple @ 0x14d16581640>] and goto state 10
+Result : <tuple @ 0x14d15b16d40> (('questions', ('question', '2.我家的____是一只 ...)
+
+State  : 10
+Stack  : HEADER QUESTIONHEADER question questions . LexToken(QUESTIONHEADER,'二、判断题:',1,66)
+Action : Reduce rule [questions -> question questions] with [<tuple @ 0x14d15b31680>,<tuple @ 0x14d15b16d40>] and goto state 7
+Result : <tuple @ 0x14d15b1d5e0> (('questions', ('question', '1.昨天我去了一家___ ...)
+
+State  : 7
+Stack  : HEADER QUESTIONHEADER questions . LexToken(QUESTIONHEADER,'二、判断题:',1,66)
+Action : Reduce rule [questionheader -> QUESTIONHEADER questions] with ['一、填空题:',<tuple @ 0x14d15b1d5e0>] and goto state 4
+Result : <tuple @ 0x14d16581980> (('questionheader', '一、填空题:', ('questions ...)
+
+State  : 4
+Stack  : HEADER questionheader . LexToken(QUESTIONHEADER,'二、判断题:',1,66)
+Action : Shift and goto state 5
+
+State  : 5
+Stack  : HEADER questionheader QUESTIONHEADER . LexToken(QUESTION,'3.中国的首都是北京。',1,73)
+Action : Shift and goto state 9
+
+State  : 9
+Stack  : HEADER questionheader QUESTIONHEADER QUESTION . LexToken(ANSWER,'答案:正确',1,84)
+Action : Shift and goto state 14
+
+State  : 14
+Stack  : HEADER questionheader QUESTIONHEADER QUESTION ANSWER . LexToken(QUESTIONHEADER,'三、选择题:',1,90)
+Action : Reduce rule [answer -> ANSWER] with ['答案:正确'] and goto state 12
+Result : <tuple @ 0x14d15b16d40> (('answer', '答案:正确'))
+
+State  : 12
+Stack  : HEADER questionheader QUESTIONHEADER QUESTION answer . LexToken(QUESTIONHEADER,'三、选择题:',1,90)
+Action : Reduce rule [question -> QUESTION answer] with ['3.中国的首都是北京。',<tuple @ 0x14d15b16d40>] and goto state 8
+Result : <tuple @ 0x14d16581ac0> (('question', '3.中国的首都是北京。', ('answer', ' ...)
+
+State  : 8
+Stack  : HEADER questionheader QUESTIONHEADER question . LexToken(QUESTIONHEADER,'三、选择题:',1,90)
+Action : Reduce rule [questions -> question] with [<tuple @ 0x14d16581ac0>] and goto state 7
+Result : <tuple @ 0x14d15afbcc0> (('questions', ('question', '3.中国的首都是北京。' ...)
+
+State  : 7
+Stack  : HEADER questionheader QUESTIONHEADER questions . LexToken(QUESTIONHEADER,'三、选择题:',1,90)
+Action : Reduce rule [questionheader -> QUESTIONHEADER questions] with ['二、判断题:',<tuple @ 0x14d15afbcc0>] and goto state 4
+Result : <tuple @ 0x14d16581c00> (('questionheader', '二、判断题:', ('questions ...)
+
+State  : 4
+Stack  : HEADER questionheader questionheader . LexToken(QUESTIONHEADER,'三、选择题:',1,90)
+Action : Shift and goto state 5
+
+State  : 5
+Stack  : HEADER questionheader questionheader QUESTIONHEADER . LexToken(QUESTION,'4.以下哪个国家不属于欧洲?',1,97)
+Action : Shift and goto state 9
+
+State  : 9
+Stack  : HEADER questionheader questionheader QUESTIONHEADER QUESTION . LexToken(OPTION,'A.法国 ',1,112)
+Action : Shift and goto state 13
+
+State  : 13
+Stack  : HEADER questionheader questionheader QUESTIONHEADER QUESTION OPTION . LexToken(OPTION,'B.英国 ',1,117)
+Action : Shift and goto state 13
+
+State  : 13
+Stack  : HEADER questionheader questionheader QUESTIONHEADER QUESTION OPTION OPTION . LexToken(OPTION,'C.美国 ',1,122)
+Action : Shift and goto state 13
+
+State  : 13
+Stack  : HEADER questionheader questionheader QUESTIONHEADER QUESTION OPTION OPTION OPTION . LexToken(OPTION,'D.德国',1,127)
+Action : Shift and goto state 13
+
+State  : 13
+Stack  : HEADER questionheader questionheader QUESTIONHEADER QUESTION OPTION OPTION OPTION OPTION . LexToken(ANSWER,'答案:C',1,132)
+Action : Reduce rule [options -> OPTION] with ['D.德国'] and goto state 16
+Result : <tuple @ 0x14d15b16200> (('options', 'D.德国'))
+
+State  : 16
+Stack  : HEADER questionheader questionheader QUESTIONHEADER QUESTION OPTION OPTION OPTION options . LexToken(ANSWER,'答案:C',1,132)
+Action : Reduce rule [options -> OPTION options] with ['C.美国 ',<tuple @ 0x14d15b16200>] and goto state 16
+Result : <tuple @ 0x14d15b22400> (('options', 'C.美国 ', 'options', 'D.德国'))
+
+State  : 16
+Stack  : HEADER questionheader questionheader QUESTIONHEADER QUESTION OPTION OPTION options . LexToken(ANSWER,'答案:C',1,132)
+Action : Reduce rule [options -> OPTION options] with ['B.英国 ',<tuple @ 0x14d15b22400>] and goto state 16
+Result : <tuple @ 0x14d15c96460> (('options', 'B.英国 ', 'options', 'C.美国 ', ...)
+
+State  : 16
+Stack  : HEADER questionheader questionheader QUESTIONHEADER QUESTION OPTION options . LexToken(ANSWER,'答案:C',1,132)
+Action : Reduce rule [options -> OPTION options] with ['A.法国 ',<tuple @ 0x14d15c96460>] and goto state 11
+Result : <tuple @ 0x14d15b0f820> (('options', 'A.法国 ', 'options', 'B.英国 ', ...)
+
+State  : 11
+Stack  : HEADER questionheader questionheader QUESTIONHEADER QUESTION options . LexToken(ANSWER,'答案:C',1,132)
+Action : Shift and goto state 14
+
+State  : 14
+Stack  : HEADER questionheader questionheader QUESTIONHEADER QUESTION options ANSWER . $end
+Action : Reduce rule [answer -> ANSWER] with ['答案:C'] and goto state 15
+Result : <tuple @ 0x14d15b16200> (('answer', '答案:C'))
+
+State  : 15
+Stack  : HEADER questionheader questionheader QUESTIONHEADER QUESTION options answer . $end
+Action : Reduce rule [question -> QUESTION options answer] with [<str @ 0x14d15b27960>,<tuple @ 0x14d15b0f820>,<tuple @ 0x14d15b16200>] and goto state 8
+Result : <tuple @ 0x14d15b22400> (('question', '4.以下哪个国家不属于欧洲?', ('options ...)
+
+State  : 8
+Stack  : HEADER questionheader questionheader QUESTIONHEADER question . $end
+Action : Reduce rule [questions -> question] with [<tuple @ 0x14d15b22400>] and goto state 7
+Result : <tuple @ 0x14d15b0bc00> (('questions', ('question', '4.以下哪个国家不属于欧 ...)
+
+State  : 7
+Stack  : HEADER questionheader questionheader QUESTIONHEADER questions . $end
+Action : Reduce rule [questionheader -> QUESTIONHEADER questions] with ['三、选择题:',<tuple @ 0x14d15b0bc00>] and goto state 4
+Result : <tuple @ 0x14d16581d00> (('questionheader', '三、选择题:', ('questions ...)
+
+State  : 4
+Stack  : HEADER questionheader questionheader questionheader . $end
+Action : Reduce rule [questionheaders -> questionheader] with [<tuple @ 0x14d16581d00>] and goto state 6
+Result : <tuple @ 0x14d15b16680> (('questionheaders', ('questionheader', ' ...)
+
+State  : 6
+Defaulted state 6: Reduce using 2
+Stack  : HEADER questionheader questionheader questionheaders . $end
+Action : Reduce rule [questionheaders -> questionheader questionheaders] with [<tuple @ 0x14d16581c00>,<tuple @ 0x14d15b16680>] and goto state 6
+Result : <tuple @ 0x14d15b22450> (('questionheaders', ('questionheader', ' ...)
+
+State  : 6
+Defaulted state 6: Reduce using 2
+Stack  : HEADER questionheader questionheaders . $end
+Action : Reduce rule [questionheaders -> questionheader questionheaders] with [<tuple @ 0x14d16581980>,<tuple @ 0x14d15b22450>] and goto state 3
+Result : <tuple @ 0x14d15c96460> (('questionheaders', ('questionheader', ' ...)
+
+State  : 3
+Defaulted state 3: Reduce using 1
+Stack  : HEADER questionheaders . $end
+Action : Reduce rule [paper -> HEADER questionheaders] with ['2023年基本语文常识试卷',<tuple @ 0x14d15c96460>] and goto state 1
+Result : <tuple @ 0x14d1658d280> (('paper', '2023年基本语文常识试卷', ('questionhea ...)
+
+State  : 1
+Stack  : paper . $end
+Done   : Returning <tuple @ 0x14d1658d280> (('paper', '2023年基本语文常识试卷', ('questionhea ...)
+PLY: PARSE DEBUG END

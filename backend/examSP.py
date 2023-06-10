@@ -1,4 +1,6 @@
 import re
+import io
+import sys
 
 #################### 词法分析器 ####################
 tokens = (
@@ -21,7 +23,22 @@ t_ignore = ' \t\n'
 
 def t_error(t):
     # 报错
-    print("Illegal character '%s'" % t.value[0])
+    best_match = None
+    best_length = 0
+    for token_name in tokens:
+        rule = globals()[f"t_{token_name}"]
+        match = re.match(rule, t.lexer.lexdata[t.lexpos:])
+        if match and len(match.group(0)) > best_length:
+            best_match = token_name
+            best_length = len(match.group(0))
+    start = max(0, t.lexer.lexpos - 5)  # 从错误位置往前取20个字符
+    end = t.lexer.lexpos + 5  # 从错误位置往后取20个字符
+    context = t.lexer.lexdata[start:end].replace('\n', '')
+    if best_match is None:
+        print("Illegal character '%s' at position %s" % (t.value[0], t.lexpos))
+    else:
+        print("Illegal character '%s' at position %s, did you mean '%s'?" % (t.value[0], t.lexpos, best_match))
+    print("Context: %s" % context)
     t.lexer.skip(1)
 
 #build the lexer
@@ -116,11 +133,21 @@ class ExamParser:
     def parse(self, raw=False):
         with open(self.filepath, 'r', encoding='utf-8') as file:
             content = file.read()
+        # 创建一个StringIO对象用于接收输出
+        process_output = io.StringIO()
+        # 保存当前的stdout，然后将stdout重定向到StringIO对象
+        old_stdout = sys.stderr
+        sys.stderr = process_output
         if raw:
-            return parser.parse(content)
-        else:
             result = parser.parse(content)
-            return parse_ast(result)
+            # 恢复原来的stdout
+            sys.stderr = old_stdout
+            return result, process_output.getvalue()
+        else:
+            result = parser.parse(content, debug=True)
+            # 恢复原来的stdout
+            sys.stderr = old_stdout
+            return parse_ast(result), process_output.getvalue()
 
 def parse_ast(node): # 将AST转为字典
     if not isinstance(node, tuple):
@@ -173,8 +200,8 @@ def extract_questions(elements, paper_title, question_type=None): # 从AST中提
     if isinstance(elements, dict):
         for key, value in elements.items():
             if key == "type" and value == "question":  # 找到题目的字典
-                question_content = elements.get("content")[2:]
-                question_answer = elements.get("answer").get("content")
+                question_content = elements.get("content")[2:] # 删去题目前面的编号
+                question_answer = elements.get("answer").get("content")[3:] # 删去答案前面的“答案：”
                 question_type = question_type
                 question_number = elements.get("content").split(".")[0] if "content" in elements else None
                 questions.append([question_number, question_content, paper_title, question_type, question_answer])
@@ -190,7 +217,7 @@ def extract_questions(elements, paper_title, question_type=None): # 从AST中提
 
 
 if __name__ == "__main__":
-    # scanner = ExamScanner('../test/test.txt')
+    # scanner = ExamScanner('../test/maked.txt')
     # result = scanner.scan()
     e_parser = ExamParser('../test/test.txt')
     result = e_parser.parse()

@@ -31,7 +31,6 @@ class Database:
 
             else:
                 table = self.cursor.fetchone()
-                print(table)
                 if table is None:
                     self.create_question_table()
                 else:
