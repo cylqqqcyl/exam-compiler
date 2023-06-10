@@ -12,7 +12,7 @@ import threading
 import math
 import datetime
 from backend.ConnDB import Database
-from backend.examScanner import Scanner
+from backend.examSP import ExamScanner
 
 class ScannerThread(QThread):
     scannerSignal = pyqtSignal(list)
@@ -22,7 +22,7 @@ class ScannerThread(QThread):
 
     def run(self):
         try:
-            scanner = Scanner(self.file_path)
+            scanner = ExamScanner(self.file_path)
             result = scanner.scan()
             self.scannerSignal.emit(result)
         except Exception as e:
@@ -78,6 +78,7 @@ class Client:
         self.mainWin.searchQuestionBtn.clicked.connect(self.search_question)
 
         self.mainWin.uploadBtn.clicked.connect(self.uploadFile)
+        self.mainWin.makeExam.clicked.connect(self.download_exam)
 
         self.mainWin.startScannerBtn.clicked.connect(self.start_scanner)
         self.mainWin.startParserBtn.clicked.connect(self.start_parser)
@@ -141,6 +142,7 @@ class Client:
             self.mainWin.scannerCheck_2.setStyleSheet("color: #ff0000;")
             self.mainWin.parserCheck.setText('未完成')
             self.mainWin.parserCheck.setStyleSheet("color: #ff0000;")
+
 
     def start_scanner(self):
         if not self.file_path:
@@ -234,6 +236,15 @@ class Client:
                 self.database.add_question(*row[1:])
         else:
             QMessageBox.warning(self.mainWin, '警告', '请先链接至数据库！')
+
+    # SECTION: Question
+
+    def download_exam(self):
+        download_path = filename, _ = QFileDialog.getSaveFileName(None, "Save File", "", "Text Files (*.txt);;All Files (*)")
+        if download_path:
+            pass
+        else:
+            QMessageBox.warning(self.mainWin, '警告', '非法保存路径！')
 
 
     # SECTION: 翻页

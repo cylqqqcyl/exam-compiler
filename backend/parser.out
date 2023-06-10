@@ -1,0 +1,227 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> paper
+Rule 1     paper -> HEADER questionheaders
+Rule 2     questionheaders -> questionheader questionheaders
+Rule 3     questionheaders -> questionheader
+Rule 4     questionheader -> QUESTIONHEADER questions
+Rule 5     questions -> question questions
+Rule 6     questions -> question
+Rule 7     question -> QUESTION
+Rule 8     question -> QUESTION options
+Rule 9     question -> QUESTION answer
+Rule 10    question -> QUESTION options answer
+Rule 11    answer -> ANSWER
+Rule 12    options -> OPTION options
+Rule 13    options -> OPTION
+
+Terminals, with rules where they appear
+
+ANSWER               : 11
+HEADER               : 1
+OPTION               : 12 13
+QUESTION             : 7 8 9 10
+QUESTIONHEADER       : 4
+error                : 
+
+Nonterminals, with rules where they appear
+
+answer               : 9 10
+options              : 8 10 12
+paper                : 0
+question             : 5 6
+questionheader       : 2 3
+questionheaders      : 1 2
+questions            : 4 5
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . paper
+    (1) paper -> . HEADER questionheaders
+
+    HEADER          shift and go to state 2
+
+    paper                          shift and go to state 1
+
+state 1
+
+    (0) S' -> paper .
+
+
+
+state 2
+
+    (1) paper -> HEADER . questionheaders
+    (2) questionheaders -> . questionheader questionheaders
+    (3) questionheaders -> . questionheader
+    (4) questionheader -> . QUESTIONHEADER questions
+
+    QUESTIONHEADER  shift and go to state 5
+
+    questionheaders                shift and go to state 3
+    questionheader                 shift and go to state 4
+
+state 3
+
+    (1) paper -> HEADER questionheaders .
+
+    $end            reduce using rule 1 (paper -> HEADER questionheaders .)
+
+
+state 4
+
+    (2) questionheaders -> questionheader . questionheaders
+    (3) questionheaders -> questionheader .
+    (2) questionheaders -> . questionheader questionheaders
+    (3) questionheaders -> . questionheader
+    (4) questionheader -> . QUESTIONHEADER questions
+
+    $end            reduce using rule 3 (questionheaders -> questionheader .)
+    QUESTIONHEADER  shift and go to state 5
+
+    questionheader                 shift and go to state 4
+    questionheaders                shift and go to state 6
+
+state 5
+
+    (4) questionheader -> QUESTIONHEADER . questions
+    (5) questions -> . question questions
+    (6) questions -> . question
+    (7) question -> . QUESTION
+    (8) question -> . QUESTION options
+    (9) question -> . QUESTION answer
+    (10) question -> . QUESTION options answer
+
+    QUESTION        shift and go to state 9
+
+    questions                      shift and go to state 7
+    question                       shift and go to state 8
+
+state 6
+
+    (2) questionheaders -> questionheader questionheaders .
+
+    $end            reduce using rule 2 (questionheaders -> questionheader questionheaders .)
+
+
+state 7
+
+    (4) questionheader -> QUESTIONHEADER questions .
+
+    QUESTIONHEADER  reduce using rule 4 (questionheader -> QUESTIONHEADER questions .)
+    $end            reduce using rule 4 (questionheader -> QUESTIONHEADER questions .)
+
+
+state 8
+
+    (5) questions -> question . questions
+    (6) questions -> question .
+    (5) questions -> . question questions
+    (6) questions -> . question
+    (7) question -> . QUESTION
+    (8) question -> . QUESTION options
+    (9) question -> . QUESTION answer
+    (10) question -> . QUESTION options answer
+
+    QUESTIONHEADER  reduce using rule 6 (questions -> question .)
+    $end            reduce using rule 6 (questions -> question .)
+    QUESTION        shift and go to state 9
+
+    question                       shift and go to state 8
+    questions                      shift and go to state 10
+
+state 9
+
+    (7) question -> QUESTION .
+    (8) question -> QUESTION . options
+    (9) question -> QUESTION . answer
+    (10) question -> QUESTION . options answer
+    (12) options -> . OPTION options
+    (13) options -> . OPTION
+    (11) answer -> . ANSWER
+
+    QUESTION        reduce using rule 7 (question -> QUESTION .)
+    QUESTIONHEADER  reduce using rule 7 (question -> QUESTION .)
+    $end            reduce using rule 7 (question -> QUESTION .)
+    OPTION          shift and go to state 13
+    ANSWER          shift and go to state 14
+
+    options                        shift and go to state 11
+    answer                         shift and go to state 12
+
+state 10
+
+    (5) questions -> question questions .
+
+    QUESTIONHEADER  reduce using rule 5 (questions -> question questions .)
+    $end            reduce using rule 5 (questions -> question questions .)
+
+
+state 11
+
+    (8) question -> QUESTION options .
+    (10) question -> QUESTION options . answer
+    (11) answer -> . ANSWER
+
+    QUESTION        reduce using rule 8 (question -> QUESTION options .)
+    QUESTIONHEADER  reduce using rule 8 (question -> QUESTION options .)
+    $end            reduce using rule 8 (question -> QUESTION options .)
+    ANSWER          shift and go to state 14
+
+    answer                         shift and go to state 15
+
+state 12
+
+    (9) question -> QUESTION answer .
+
+    QUESTION        reduce using rule 9 (question -> QUESTION answer .)
+    QUESTIONHEADER  reduce using rule 9 (question -> QUESTION answer .)
+    $end            reduce using rule 9 (question -> QUESTION answer .)
+
+
+state 13
+
+    (12) options -> OPTION . options
+    (13) options -> OPTION .
+    (12) options -> . OPTION options
+    (13) options -> . OPTION
+
+    ANSWER          reduce using rule 13 (options -> OPTION .)
+    QUESTION        reduce using rule 13 (options -> OPTION .)
+    QUESTIONHEADER  reduce using rule 13 (options -> OPTION .)
+    $end            reduce using rule 13 (options -> OPTION .)
+    OPTION          shift and go to state 13
+
+    options                        shift and go to state 16
+
+state 14
+
+    (11) answer -> ANSWER .
+
+    QUESTION        reduce using rule 11 (answer -> ANSWER .)
+    QUESTIONHEADER  reduce using rule 11 (answer -> ANSWER .)
+    $end            reduce using rule 11 (answer -> ANSWER .)
+
+
+state 15
+
+    (10) question -> QUESTION options answer .
+
+    QUESTION        reduce using rule 10 (question -> QUESTION options answer .)
+    QUESTIONHEADER  reduce using rule 10 (question -> QUESTION options answer .)
+    $end            reduce using rule 10 (question -> QUESTION options answer .)
+
+
+state 16
+
+    (12) options -> OPTION options .
+
+    ANSWER          reduce using rule 12 (options -> OPTION options .)
+    QUESTION        reduce using rule 12 (options -> OPTION options .)
+    QUESTIONHEADER  reduce using rule 12 (options -> OPTION options .)
+    $end            reduce using rule 12 (options -> OPTION options .)
+

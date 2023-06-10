@@ -1252,9 +1252,38 @@ background-color: rgba(255, 255, 255, 0);</string>
          </item>
          <item>
           <widget class="QTreeWidget" name="parserTree">
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <attribute name="headerMinimumSectionSize">
+            <number>500</number>
+           </attribute>
+           <attribute name="headerDefaultSectionSize">
+            <number>500</number>
+           </attribute>
            <column>
             <property name="text">
-             <string notr="true">试卷</string>
+             <string notr="true">类型</string>
+            </property>
+            <property name="font">
+             <font>
+              <family>微软雅黑</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>值</string>
+            </property>
+            <property name="font">
+             <font>
+              <family>微软雅黑</family>
+              <pointsize>12</pointsize>
+             </font>
             </property>
            </column>
            <item>
