@@ -356,7 +356,9 @@ class Client:
 #将Parser结果转为树形结构
 def add_items(parent, elements):#递归添加子项
     if isinstance(elements, dict):
-        for key, value in elements.items():
+        print('$',elements)
+
+        def _additem(key,value):
             item = QTreeWidgetItem()
             item.setText(0, f"{key}")
             parent.addChild(item)
@@ -364,6 +366,17 @@ def add_items(parent, elements):#递归添加子项
                 add_items(item, value)
             else:
                 item.setText(1, f"{value}")
+
+        if 'type' in elements and 'title' in elements:
+            _additem(elements['type'],elements['title'])
+        
+        if 'type' in elements and 'content' in elements:
+            _additem(elements['type'],elements['content'])
+
+        for key, value in elements.items():
+            if key != 'type' and key != 'content' and key != 'title':
+                _additem(key, value)
+            
     elif isinstance(elements, list):
         for subvalue in elements:
             add_items(parent, subvalue)
