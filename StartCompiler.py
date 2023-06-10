@@ -12,7 +12,7 @@ import threading
 import math
 import datetime
 from backend.ConnDB import Database
-from backend.examSP import ExamScanner
+from backend.examSP import ExamScanner, ExamParser, extract_questions
 
 class ScannerThread(QThread):
     scannerSignal = pyqtSignal(list)
@@ -31,24 +31,34 @@ class ScannerThread(QThread):
 
 
 class ParserThread(QThread):
-    parserSignal = pyqtSignal(bool)
+    parserSignal = pyqtSignal(dict)
     def __init__(self, file_path, parent=None):
         super(ParserThread, self).__init__(parent)
         self.file_path = file_path
 
     def run(self):
-        self.parserSignal.emit(True)
-        # TODO: 调用后端的解析器
+        try:
+            parser = ExamParser(self.file_path)
+            result = parser.parse()
+            self.parserSignal.emit(result)
+        except Exception as e:
+            print(e)
+            self.parserSignal.emit({})
 
 class SyntaxThread(QThread):
-    syntaxSignal = pyqtSignal(bool)
-    def __init__(self, file_path, parent=None):
+    syntaxSignal = pyqtSignal(list)
+    def __init__(self, ast, parent=None):
         super(SyntaxThread, self).__init__(parent)
-        self.file_path = file_path
+        self.ast = ast
 
     def run(self):
-        self.syntaxSignal.emit(True)
-        # TODO: 调用后端的语法分析器
+        try:
+            questions = extract_questions(self.ast, self.ast.get('title'))
+            self.syntaxSignal.emit(questions)
+        except Exception as e:
+            print(e)
+            self.syntaxSignal.emit([])
+
 
 
 
@@ -58,6 +68,7 @@ class Client:
 
         self.file_path = None
 
+        self.ast = None
 
         self.database = None
         self.init_signal_slots()
@@ -189,14 +200,18 @@ class Client:
         self.parserThread.parserSignal.connect(self.parser_callback)
         self.parserThread.start()
 
-    def parser_callback(self, success):
-        if success:
+    def parser_callback(self, ast):
+        if ast:
+            self.ast = ast
             QMessageBox.information(self.mainWin, '提示', '语法分析完成！')
             self.mainWin.parserCheck.setText('已完成')
             self.mainWin.parserCheck.setStyleSheet("color: #00ff00;")
             self.mainWin.startScannerBtn.setEnabled(True)
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
+
+            add_items(self.mainWin.parserTree.invisibleRootItem(), ast)
+            self.mainWin.parserTree.expandAll()
         else:
             QMessageBox.warning(self.mainWin, '警告', '语法分析失败！')
 
@@ -216,16 +231,18 @@ class Client:
         self.mainWin.startParserBtn.setEnabled(False)
         self.mainWin.startSyntaxBtn.setEnabled(False)
 
-        self.syntaxThread = SyntaxThread(self.file_path)
+        self.syntaxThread = SyntaxThread(self.ast)
         self.syntaxThread.syntaxSignal.connect(self.syntax_callback)
         self.syntaxThread.start()
 
-    def syntax_callback(self, success):
-        if success:
+    def syntax_callback(self, questions):
+        if questions:
             QMessageBox.information(self.mainWin, '提示', '语义分析完成！')
             self.mainWin.startScannerBtn.setEnabled(True)
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
+
+            self.mainWin.updateSyntaxTable(questions)
         else:
             QMessageBox.warning(self.mainWin, '警告', '语义分析失败！')
 
@@ -284,6 +301,20 @@ class Client:
             QMessageBox.critical(self.mainWin, '错误', '未知数据类型！')
             return
 
+#将Parser结果转为树形结构
+def add_items(parent, elements):#递归添加子项
+    if isinstance(elements, dict):
+        for key, value in elements.items():
+            item = QTreeWidgetItem()
+            item.setText(0, f"{key}")
+            parent.addChild(item)
+            if isinstance(value, dict) or isinstance(value, list):
+                add_items(item, value)
+            else:
+                item.setText(1, f"{value}")
+    elif isinstance(elements, list):
+        for subvalue in elements:
+            add_items(parent, subvalue)
 
 if __name__ == '__main__':
     app = QApplication([])

@@ -113,10 +113,72 @@ class ExamParser:
     def __init__(self, filepath):
         self.filepath = filepath
 
-    def parse(self):
+    def parse(self, raw=False):
         with open(self.filepath, 'r', encoding='utf-8') as file:
             content = file.read()
-        return parser.parse(content)
+        if raw:
+            return parser.parse(content)
+        else:
+            result = parser.parse(content)
+            return parse_ast(result)
+
+def parse_ast(node): # 将AST转为字典
+    if not isinstance(node, tuple):
+        return node
+    if node[0] == 'paper':
+        return {
+            'type': 'paper',
+            'title': node[1],
+            'content': parse_ast(node[2])
+        }
+    elif node[0] == 'questionheaders':
+        return [parse_ast(child) for child in node[1:]]
+    elif node[0] == 'questionheader':
+        return {
+            'type': 'questionheader',
+            'title': node[1],
+            'questions': parse_ast(node[2])
+        }
+    elif node[0] == 'questions':
+        return [parse_ast(child) for child in node[1:]]
+    elif node[0] == 'question':
+        return {
+            'type': 'question',
+            'content': node[1],
+            'answer': parse_ast(node[2])
+        }
+    elif node[0] == 'answer':
+        return {
+            'type': 'answer',
+            'content': node[1]
+        }
+    elif node[0] == 'options':
+        return {
+            'type': 'options',
+            'choices': node[1:]
+        }
+    else:
+        return node
+
+def extract_questions(elements, paper_title, question_type=None): # 从AST中提取题目
+    questions = []
+    if isinstance(elements, dict):
+        for key, value in elements.items():
+            if key == "type" and value == "question":  # 找到题目的字典
+                question_content = elements.get("content")[2:]
+                question_answer = elements.get("answer").get("content")
+                question_type = question_type
+                question_number = elements.get("content").split(".")[0] if "content" in elements else None
+                questions.append([question_number, question_content, paper_title, question_type, question_answer])
+            if key == "type" and value == "questionheader":  # 找到题型的字典
+                question_type = elements.get("title")
+            elif isinstance(value, dict) or isinstance(value, list):
+                questions.extend(extract_questions(value, paper_title, question_type)) # 递归遍历子字典或列表
+    elif isinstance(elements, list):
+        for subvalue in elements:
+            questions.extend(extract_questions(subvalue, paper_title, question_type)) # 递归遍历子字典或列表
+    return questions
+
 
 
 if __name__ == "__main__":
@@ -124,5 +186,6 @@ if __name__ == "__main__":
     # result = scanner.scan()
     e_parser = ExamParser('../test/test.txt')
     result = e_parser.parse()
+    questions = extract_questions(result,result.get('title'))
     print(result)
-    print(type(result))
+    print(questions)
