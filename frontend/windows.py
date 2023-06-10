@@ -5,6 +5,57 @@ from PyQt5.QtGui import *
 import sys
 
 from mainWin import Ui_MainWindow
+from fileView import Ui_FileView
+from processView import Ui_ProcessView
+
+class FileView(QDialog, Ui_FileView):
+    def __init__(self):
+        super(FileView, self).__init__()
+        self.setupUi(self)
+
+        self.filepath = None
+
+        self.initSignalSlots()
+
+        self.modified = False
+
+    def exec(self):
+        super(FileView, self).exec()
+        return self.modified
+    def initSignalSlots(self):
+        self.saveBtn.clicked.connect(self.saveFile)
+
+    def saveFile(self):
+        if self.filepath is None:
+            QMessageBox.warning(self, '警告', '请先上传文件！')
+            return
+        else:
+            with open(self.filepath, 'w', encoding='utf-8') as f:
+                f.write(self.fileBrowser.toPlainText())
+            self.modified = True
+            QMessageBox.information(self, '提示', '保存成功！')
+
+class ProcessView(QDialog, Ui_ProcessView):
+    def __init__(self):
+        super(ProcessView, self).__init__()
+        self.setupUi(self)
+
+        self.initSignalSlots()
+
+    def initSignalSlots(self):
+        self.saveBtn.clicked.connect(self.saveFile)
+
+    def saveFile(self):
+        filepath,_ = QFileDialog.getSaveFileName(None, "Save File", "", "Text Files (*.txt);;All Files (*)")
+        if filepath:
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write(self.processBrowser.toPlainText())
+            QMessageBox.information(self, '提示', '保存成功！')
+        else:
+            QMessageBox.warning(self, '警告', '请先选择保存路径！')
+            return
+
+
 class MainWin(QMainWindow, Ui_MainWindow):
     pageSignal = pyqtSignal(list)
 
