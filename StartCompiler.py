@@ -215,6 +215,7 @@ class Client:
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
             #更新词法分析结果
+            self.mainWin.lexemeTbl.clearContents()
             self.mainWin.updateLexemeTable(result)
 
             self.fileView.modified = False # 词法分析完成后将文件修改标志置为False
@@ -251,7 +252,8 @@ class Client:
             self.mainWin.startScannerBtn.setEnabled(True)
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
-
+            #更新语法分析结果
+            self.mainWin.parserTree.clear()
             add_items(self.mainWin.parserTree.invisibleRootItem(), ast)
             self.mainWin.parserTree.expandAll()
 
@@ -303,6 +305,8 @@ class Client:
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
 
+            #更新语义分析结果
+            self.mainWin.syntaxTbl.clearContents()
             self.mainWin.updateSyntaxTable(questions)
             self.syntaxTbl = questions
 
