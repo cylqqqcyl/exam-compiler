@@ -85,14 +85,13 @@ class MainWin(QMainWindow, Ui_MainWindow):
         self.questionTbl.clearContents()
         try:
             for i, row in enumerate(table):
-                # row: (id, content, subject, year, type, answer)
+                # row: (id, content, origin, type, answer)
                 self.questionTbl.insertRow(i)
                 self.questionTbl.setItem(i, 0, QTableWidgetItem(str(row[0])))
                 self.questionTbl.setItem(i, 1, QTableWidgetItem(row[1]))
                 self.questionTbl.setItem(i, 2, QTableWidgetItem(row[2]))
                 self.questionTbl.setItem(i, 3, QTableWidgetItem(row[3]))
                 self.questionTbl.setItem(i, 4, QTableWidgetItem(str(row[4])))
-                self.questionTbl.setItem(i, 5, QTableWidgetItem(row[5]))
         except Exception as e:
             print(e)
 
@@ -126,14 +125,13 @@ class MainWin(QMainWindow, Ui_MainWindow):
         self.syntaxTbl.clearContents()
         try:
             for i, row in enumerate(table):
-                # row: (num, content, subject, year, type, answer)
+                # row: (num, content, origin, type, answer)
                 self.syntaxTbl.insertRow(i)
                 self.syntaxTbl.setItem(i, 0, QTableWidgetItem(str(row[0])))
                 self.syntaxTbl.setItem(i, 1, QTableWidgetItem(row[1]))
                 self.syntaxTbl.setItem(i, 2, QTableWidgetItem(row[2]))
                 self.syntaxTbl.setItem(i, 3, QTableWidgetItem(row[3]))
                 self.syntaxTbl.setItem(i, 4, QTableWidgetItem(str(row[4])))
-                self.syntaxTbl.setItem(i, 5, QTableWidgetItem(row[5]))
         except Exception as e:
             print(e)
 
