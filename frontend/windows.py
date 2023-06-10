@@ -54,11 +54,10 @@ class MainWin(QMainWindow, Ui_MainWindow):
     # SECTION: Question Page
     def getQuestionSearchKey(self):
         content = self.searchQuestionContentEdit.text()
-        subject = self.searchQuestionSubjectEdit.text()
-        year = self.searchQuestionYearEdit.text()
+        origin = self.searchQuestionOriginEdit.text()
         type = self.searchQuestionTypeEdit.text()
 
-        return content, subject, year, type
+        return content, origin, type
 
     def getSelectedQuestionInfo(self):
         row = self.questionTbl.currentRow()

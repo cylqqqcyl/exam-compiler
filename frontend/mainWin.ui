@@ -695,26 +695,7 @@ background-color: rgba(255, 255, 255, 0);</string>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="searchQuestionSubjectEdit">
-             <property name="font">
-              <font>
-               <family>微软雅黑</family>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgba(255, 255, 255, 150);</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="placeholderText">
-              <string>科目</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="searchQuestionYearEdit">
+            <widget class="QLineEdit" name="searchQuestionOriginEdit">
              <property name="font">
               <font>
                <family>微软雅黑</family>
@@ -725,7 +706,7 @@ background-color: rgba(255, 255, 255, 0);</string>
               <string notr="true">background-color: rgba(255, 255, 255, 150);</string>
              </property>
              <property name="placeholderText">
-              <string>年份</string>
+              <string>试卷</string>
              </property>
             </widget>
            </item>
