@@ -69,6 +69,7 @@ class Client:
         self.file_path = None
 
         self.ast = None
+        self.syntaxTbl = None
 
         self.database = None
         self.init_signal_slots()
@@ -94,10 +95,11 @@ class Client:
         self.mainWin.startScannerBtn.clicked.connect(self.start_scanner)
         self.mainWin.startParserBtn.clicked.connect(self.start_parser)
         self.mainWin.startSyntaxBtn.clicked.connect(self.start_syntax)
+        self.mainWin.addQuestionBtn.clicked.connect(self.write_syntax2db)
 
     def create_connection(self):
         self.database = Database()
-        self.database.create_connection()
+        self.database.create_connection('backend/test.db')
 
 
     def log_out(self):
@@ -125,7 +127,7 @@ class Client:
             QMessageBox.warning(self.mainWin, '警告', '请先链接至数据库！')
 
     def search_question(self):
-        # id, content, subject, year, type, answer
+        # id, content, origin, type, answer
         # 可以为空
         self.question_search_keys = self.mainWin.getQuestionSearchKey()
         if not self.question_search_keys:
@@ -243,16 +245,22 @@ class Client:
             self.mainWin.startSyntaxBtn.setEnabled(True)
 
             self.mainWin.updateSyntaxTable(questions)
+            self.syntaxTbl = questions
         else:
             QMessageBox.warning(self.mainWin, '警告', '语义分析失败！')
 
 
-    def write_syntax2db(self, syntaxTbl):
-        if self.database:
-            for row in syntaxTbl:
-                self.database.add_question(*row[1:])
-        else:
-            QMessageBox.warning(self.mainWin, '警告', '请先链接至数据库！')
+    def write_syntax2db(self):
+        try:
+            if self.database:
+                for row in self.syntaxTbl:
+                    self.database.add_question(*row[1:])
+                QMessageBox.information(self.mainWin, '提示', '语义分析结果写入数据库成功！')
+            else:
+                QMessageBox.warning(self.mainWin, '警告', '请先链接至数据库！')
+        except Exception as e:
+            QMessageBox.warning(self.mainWin, '警告', '语义分析结果写入数据库失败！')
+
 
     # SECTION: Question
 
