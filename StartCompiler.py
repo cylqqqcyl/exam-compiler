@@ -265,9 +265,53 @@ class Client:
     # SECTION: Question
 
     def download_exam(self):
-        download_path = filename, _ = QFileDialog.getSaveFileName(None, "Save File", "", "Text Files (*.txt);;All Files (*)")
+        download_path, _ = QFileDialog.getSaveFileName(None, "Save File", "", "Text Files (*.txt);;All Files (*)")
         if download_path:
-            pass
+            # 创建分类存储
+            choice_questions = []
+            judgment_questions = []
+            fill_questions = []
+            #数字到中文序号的映射
+            num2chn = {1: '一', 2: '二', 3: '三', 4: '四', 5: '五'}
+            with open(download_path, 'w', encoding='utf-8') as f:
+                selected_rows = set(index.row() for index in self.mainWin.syntaxTbl.selectedIndexes())
+                for row in selected_rows:
+                    question_content_item = self.mainWin.syntaxTbl.item(row, 0)
+                    question_type_item = self.mainWin.syntaxTbl.item(row, 2)
+                    answer_item = self.mainWin.syntaxTbl.item(row, 3)
+                    if question_type_item.text() == '选择题':
+                        choice_questions.append((question_content_item.text(), answer_item.text()))
+                    elif question_type_item.text() == '判断题':
+                        judgment_questions.append((question_content_item.text(), answer_item.text()))
+                    elif question_type_item.text() == '填空题':
+                        fill_questions.append((question_content_item.text(), answer_item.text()))
+                    else:
+                        QMessageBox.warning(self.mainWin, '警告', '未知题型！')
+                f.write('xxx考试试卷\n')
+                cur_question_header = 1
+                cur_question_num = 1
+                if choice_questions:
+                    f.write('{}、选择题\n'.format(num2chn[cur_question_header]))
+                    for i, question in enumerate(choice_questions):
+                        f.write(cur_question_num + '.' + question[0] + ' ')
+                        f.write('答案：' + question[1] + '\n')
+                        cur_question_num += 1
+                    cur_question_header += 1
+                if judgment_questions:
+                    f.write('{}、判断题\n'.format(num2chn[cur_question_header]))
+                    for i, question in enumerate(judgment_questions):
+                        f.write(cur_question_num + '.' + question[0] + ' ')
+                        f.write('答案：' + question[1] + '\n')
+                        cur_question_num += 1
+                    cur_question_header += 1
+                if fill_questions:
+                    f.write('{}、填空题\n'.format(num2chn[cur_question_header]))
+                    for i, question in enumerate(fill_questions):
+                        f.write(cur_question_num + '.' + question[0] + ' ')
+                        f.write('答案：' + question[1] + '\n')
+                        cur_question_num += 1
+                    cur_question_header += 1
+                QMessageBox.information(self.mainWin, '提示', '试卷创建成功！')
         else:
             QMessageBox.warning(self.mainWin, '警告', '非法保存路径！')
 
