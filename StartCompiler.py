@@ -17,6 +17,7 @@ from backend.examSP import ExamScanner, ExamParser, extract_questions
 
 class ScannerThread(QThread): # 词法分析线程
     scannerSignal = pyqtSignal(list)
+    scannerErrorSignal = pyqtSignal(str)
     def __init__(self, file_path, parent=None):
         super(ScannerThread, self).__init__(parent)
         self.file_path = file_path
@@ -28,18 +29,19 @@ class ScannerThread(QThread): # 词法分析线程
             self.scannerSignal.emit(result)
         except Exception as e:
             print(e)
+            self.scannerErrorSignal.emit(str(e))
             self.scannerSignal.emit([])
 
 
 class ParserThread(QThread): # 语法分析线程
     parserSignal = pyqtSignal(dict)
     processSignal = pyqtSignal(str)
+    parserErrorSignal = pyqtSignal(str)
     def __init__(self, file_path, parent=None):
         super(ParserThread, self).__init__(parent)
         self.file_path = file_path
 
     def run(self):
-
         try:
             parser = ExamParser(self.file_path)
             result, process_output = parser.parse()
@@ -48,10 +50,12 @@ class ParserThread(QThread): # 语法分析线程
             self.processSignal.emit(process_output)
         except Exception as e:
             print(e)
+            self.parserErrorSignal.emit(str(e))
             self.parserSignal.emit({})
 
 class SyntaxThread(QThread): # 语义分析线程
     syntaxSignal = pyqtSignal(list)
+    syntaxErrorSignal = pyqtSignal(str)
     def __init__(self, ast, parent=None):
         super(SyntaxThread, self).__init__(parent)
         self.ast = ast
@@ -62,6 +66,7 @@ class SyntaxThread(QThread): # 语义分析线程
             self.syntaxSignal.emit(questions)
         except Exception as e:
             print(e)
+            self.syntaxErrorSignal.emit(str(e))
             self.syntaxSignal.emit([])
 
 
@@ -201,6 +206,7 @@ class Client:
 
         self.scannerThread = ScannerThread(self.file_path)
         self.scannerThread.scannerSignal.connect(self.scanner_callback)
+        self.scannerThread.scannerErrorSignal.connect(self.scanner_error_callback)
         self.scannerThread.start()
 
     def scanner_callback(self, result): # 词法分析回调
@@ -225,6 +231,15 @@ class Client:
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
 
+    def scanner_error_callback(self, error): # 词法分析错误回调
+        QMessageBox.warning(self.mainWin, '警告', "词法分析错误！\n 非法字符：\n" + error +
+                            '\n请检查文件是否符合规范！' +
+                            '正确格式如下：\n' +
+                            '1. 试卷标题要以XXXX年开头，“试卷”结尾\n' +
+                            '2. 题目要以“（题号）.”开头，以[。.?？]中的一个结尾\n' +
+                            '3. 选项要以[a-zA-Z].开头\n' +
+                            '4. 答案要以“答案[:：]”开头\n' +
+                            '5. 题型形如“一、XX题[:：]”')
     # SECTION: Parser
 
     def start_parser(self): # 语法分析
@@ -241,6 +256,7 @@ class Client:
         self.parserThread = ParserThread(self.file_path)
         self.parserThread.parserSignal.connect(self.parser_callback)
         self.parserThread.processSignal.connect(self.process_callback)
+        self.parserThread.parserErrorSignal.connect(self.parser_error_callback)
         self.parserThread.start()
 
     def parser_callback(self, ast): # 语法分析回调
@@ -267,6 +283,11 @@ class Client:
     def process_callback(self, process): # 语法分析过程回调
         self.mainWin.parserProcessViewBtn.setEnabled(True)
         self.process_output = process
+
+    def parser_error_callback(self, error): # 语法分析错误回调
+        QMessageBox.warning(self.mainWin, '警告', "语法分析错误！\n 非法的语法结构：\n" + error +
+                            '\n请检查文件是否符合规范！')
+
 
     def view_process(self): # 查看语法分析过程
         if self.process_output:
@@ -296,6 +317,7 @@ class Client:
 
         self.syntaxThread = SyntaxThread(self.ast)
         self.syntaxThread.syntaxSignal.connect(self.syntax_callback)
+        self.syntaxThread.syntaxErrorSignal.connect(self.syntax_error_callback)
         self.syntaxThread.start()
 
     def syntax_callback(self, questions): # 语义分析回调函数
@@ -317,6 +339,8 @@ class Client:
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
 
+    def syntax_error_callback(self, error): # 语义分析错误回调
+        QMessageBox.warning(self.mainWin, '警告', error)
 
     def write_syntax2db(self): # 将语义分析结果写入数据库
         try:
