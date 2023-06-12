@@ -157,6 +157,7 @@ class MainWin(QMainWindow, Ui_MainWindow):
                 self.lexemeTbl.insertRow(i)
                 self.lexemeTbl.setItem(i, 0, QTableWidgetItem(row[0]))
                 self.lexemeTbl.setItem(i, 1, QTableWidgetItem(row[1]))
+                self.lexemeTbl.setItem(i, 2, QTableWidgetItem(str(row[2])))
         except Exception as e:
             print(e)
 
