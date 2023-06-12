@@ -18,28 +18,52 @@ t_ANSWER = r'答案[:：].*' #答案
 t_HEADER = r'\d{4}年 .*?试卷' #试卷头
 t_QUESTIONHEADER = r'[一二三四五六七八九十]、.{2}题[:：]' #题型号
 
-# 忽略空白和换行符
-t_ignore = ' \t\n'
+# 忽略空格和制表符
+t_ignore = ' \t'
+class LexicalError(Exception):
+    def __init__(self, errors):
+        error_messages = ["At line %s: Invalid token %s" % (error[0], error[1].replace("\n", "")) for error in errors]
+        self.message = "\n".join(error_messages)
+
+    def __str__(self):
+        return self.message
+
+class ParserError(Exception):
+    def __init__(self, error):
+        self.message = error
+
+    def __str__(self):
+        return self.message
+
+def init_lexer(lexer): # 初始化行号
+    lexer.lineno = 1
 
 def t_error(t):
     # 报错
-    best_match = None
-    best_length = 0
-    for token_name in tokens:
-        rule = globals()[f"t_{token_name}"]
-        match = re.match(rule, t.lexer.lexdata[t.lexpos:])
-        if match and len(match.group(0)) > best_length:
-            best_match = token_name
-            best_length = len(match.group(0))
-    start = max(0, t.lexer.lexpos - 5)  # 从错误位置往前取20个字符
-    end = t.lexer.lexpos + 5  # 从错误位置往后取20个字符
-    context = t.lexer.lexdata[start:end].replace('\n', '')
-    if best_match is None:
-        print("Illegal character '%s' at position %s" % (t.value[0], t.lexpos))
+    match = None
+    error_buffer = ""
+    current_pos = t.lexer.lexpos
+    while t.lexer.lexpos < len(t.lexer.lexdata):
+        for token_name in tokens:
+            rule = globals()[f"t_{token_name}"]
+            match = re.match(rule, t.lexer.lexdata[current_pos:])
+            if match:
+                break
+        if match:
+            t.lexer.skip(len(error_buffer))
+            break
+        else:
+            error_buffer += t.lexer.lexdata[current_pos]
+            current_pos += 1
+    if not hasattr(t.lexer, 'errors'):
+        t.lexer.errors = []
+        t.lexer.errors.append([t.lexer.lineno, error_buffer])
     else:
-        print("Illegal character '%s' at position %s, did you mean '%s'?" % (t.value[0], t.lexpos, best_match))
-    print("Context: %s" % context)
-    t.lexer.skip(1)
+        t.lexer.errors.append([t.lexer.lineno, error_buffer])
+
+def t_newline(t): # 记录行号
+    r'\n+'
+    t.lexer.lineno += len(t.value)
 
 #build the lexer
 import ply.lex as lex
@@ -99,8 +123,9 @@ def p_options(p): #选项
     else:
         p[0] = ('options', p[1])
 
-def p_error(p):
-    print("Syntax error in {}".format(p))
+def p_error(p): # 报错
+    print("Syntax error in {} at line {}".format(p, p.lexer.lineno))
+    raise ParserError("Syntax error in {} at line {}".format(p, p.lexer.lineno))
 
 # 构建解析器
 import ply.yacc as yacc
@@ -123,6 +148,11 @@ class ExamScanner:
             if not tok:
                 break
             tokens.append((tok.value, tok.type))
+        if hasattr(lexer, 'errors') and lexer.errors:
+            print(tokens)
+            errors = lexer.errors
+            lexer.errors = []
+            raise LexicalError(errors)
         # 返回token列表
         return tokens
 
@@ -138,6 +168,8 @@ class ExamParser:
         # 保存当前的stdout，然后将stdout重定向到StringIO对象
         old_stdout = sys.stderr
         sys.stderr = process_output
+
+        lexer.lineno = 1 # 初始化行号
         if raw:
             result = parser.parse(content)
             # 恢复原来的stdout
@@ -217,10 +249,10 @@ def extract_questions(elements, paper_title, question_type=None): # 从AST中提
 
 
 if __name__ == "__main__":
-    # scanner = ExamScanner('../test/maked.txt')
+    # scanner = ExamScanner('../test/test.txt')
     # result = scanner.scan()
     e_parser = ExamParser('../test/test.txt')
-    result = e_parser.parse()
-    questions = extract_questions(result,result.get('title'))
+    result = e_parser.parse(raw=True)
+    # questions = extract_questions(result,result.get('title'))
     print(result)
-    print(questions)
+    # print(questions)
