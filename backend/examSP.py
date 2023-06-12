@@ -147,7 +147,7 @@ class ExamScanner:
             tok = lexer.token()
             if not tok:
                 break
-            tokens.append((tok.value, tok.type))
+            tokens.append((tok.value, tok.type, tok.lineno))
         if hasattr(lexer, 'errors') and lexer.errors:
             print(tokens)
             errors = lexer.errors
@@ -249,10 +249,10 @@ def extract_questions(elements, paper_title, question_type=None): # 从AST中提
 
 
 if __name__ == "__main__":
-    # scanner = ExamScanner('../test/test.txt')
-    # result = scanner.scan()
-    e_parser = ExamParser('../test/test.txt')
-    result = e_parser.parse(raw=True)
+    scanner = ExamScanner('../test/test.txt')
+    result = scanner.scan()
+    # e_parser = ExamParser('../test/test.txt')
+    # result = e_parser.parse(raw=True)
     # questions = extract_questions(result,result.get('title'))
     print(result)
     # print(questions)

@@ -4,6 +4,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 import sys
+import json
 
 sys.path.append('frontend')
 sys.path.append('backend')
@@ -116,6 +117,10 @@ class Client:
 
         self.mainWin.parserProcessViewBtn.clicked.connect(self.view_process)
 
+        self.mainWin.saveScanResultBtn.clicked.connect(self.save_scanner_result)
+        self.mainWin.saveParserTreeBtn.clicked.connect(self.save_parser_tree)
+        self.mainWin.saveQuestionBtn.clicked.connect(self.save_question)
+
     def create_connection(self): # 创建数据库连接
         self.database = Database()
         self.database.create_connection('backend/test.db')
@@ -220,6 +225,7 @@ class Client:
             self.mainWin.startScannerBtn.setEnabled(True)
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
+            self.mainWin.saveScanResultBtn.setEnabled(True)
             #更新词法分析结果
             self.mainWin.lexemeTbl.clearContents()
             self.mainWin.updateLexemeTable(result)
@@ -227,9 +233,11 @@ class Client:
             self.fileView.modified = False # 词法分析完成后将文件修改标志置为False
         else:
             QMessageBox.warning(self.mainWin, '警告', '词法分析失败！')
+            self.mainWin.lexemeTbl.clearContents()
             self.mainWin.startScannerBtn.setEnabled(True)
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
+            self.mainWin.saveScanResultBtn.setEnabled(False)
 
     def scanner_error_callback(self, error): # 词法分析错误回调
         QMessageBox.warning(self.mainWin, '警告', "词法分析错误！\n 非法字符：\n" + error +
@@ -240,6 +248,21 @@ class Client:
                             '3. 选项要以[a-zA-Z].开头\n' +
                             '4. 答案要以“答案[:：]”开头\n' +
                             '5. 题型形如“一、XX题[:：]”')
+
+    def save_scanner_result(self): # 保存词法分析结果
+        if self.mainWin.scannerCheck.text() == '已完成':
+            self.file_path, _ = QFileDialog.getSaveFileName(self.mainWin, '保存词法分析结果', '', '*.txt;;All Files (*)')
+            if self.file_path:
+                with open(self.file_path, 'w', encoding='utf-8') as f:
+                    for i in range(self.mainWin.lexemeTbl.rowCount()):
+                        f.write(self.mainWin.lexemeTbl.item(i, 0).text() + '\t' + self.mainWin.lexemeTbl.item(i, 1).text() + '\t'+
+                                self.mainWin.lexemeTbl.item(i, 2).text() + '\n')
+                QMessageBox.information(self.mainWin, '提示', '保存成功！')
+            else:
+                QMessageBox.warning(self.mainWin, '警告', '非法保存路径！')
+        else:
+            QMessageBox.warning(self.mainWin, '警告', '请先完成词法分析！')
+
     # SECTION: Parser
 
     def start_parser(self): # 语法分析
@@ -268,6 +291,7 @@ class Client:
             self.mainWin.startScannerBtn.setEnabled(True)
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
+            self.mainWin.saveParserTreeBtn.setEnabled(True)
             #更新语法分析结果
             self.mainWin.parserTree.clear()
             add_items(self.mainWin.parserTree.invisibleRootItem(), ast)
@@ -276,9 +300,11 @@ class Client:
             self.fileView.modified = False # 语法分析完成后将文件修改标志置为False
         else:
             QMessageBox.warning(self.mainWin, '警告', '语法分析失败！')
+            self.mainWin.parserTree.clear()
             self.mainWin.startScannerBtn.setEnabled(True)
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
+            self.mainWin.saveParserTreeBtn.setEnabled(False)
 
     def process_callback(self, process): # 语法分析过程回调
         self.mainWin.parserProcessViewBtn.setEnabled(True)
@@ -288,6 +314,21 @@ class Client:
         QMessageBox.warning(self.mainWin, '警告', "语法分析错误！\n 非法的语法结构：\n" + error +
                             '\n请检查文件是否符合规范！')
 
+    def save_parser_tree(self): # 保存语法分析结果
+        if self.mainWin.parserCheck.text() == '已完成':
+            self.file_path, _ = QFileDialog.getSaveFileName(self.mainWin, '保存语法分析结果', '', '*.txt;;All Files (*)')
+            if self.file_path:
+                with open(self.file_path, 'w', encoding='utf-8') as f:
+                    tree_text = ""
+                    root = self.mainWin.parserTree.invisibleRootItem()
+                    for i in range(root.childCount()):
+                        tree_text += traverse_tree(root.child(i))
+                    f.write(tree_text)
+                QMessageBox.information(self.mainWin, '提示', '保存成功！')
+            else:
+                QMessageBox.warning(self.mainWin, '警告', '非法保存路径！')
+        else:
+            QMessageBox.warning(self.mainWin, '警告', '请先完成语法分析！')
 
     def view_process(self): # 查看语法分析过程
         if self.process_output:
@@ -326,6 +367,8 @@ class Client:
             self.mainWin.startScannerBtn.setEnabled(True)
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
+            self.mainWin.addQuestionBtn.setEnabled(True)
+            self.mainWin.saveQuestionBtn.setEnabled(True)
 
             #更新语义分析结果
             self.mainWin.syntaxTbl.clearContents()
@@ -335,9 +378,12 @@ class Client:
             self.fileView.modified = False # 语义分析完成后将文件修改标志置为False
         else:
             QMessageBox.warning(self.mainWin, '警告', '语义分析失败！')
+            self.mainWin.syntaxTbl.clearContents()
             self.mainWin.startScannerBtn.setEnabled(True)
             self.mainWin.startParserBtn.setEnabled(True)
             self.mainWin.startSyntaxBtn.setEnabled(True)
+            self.mainWin.addQuestionBtn.setEnabled(False)
+            self.mainWin.saveQuestionBtn.setEnabled(False)
 
     def syntax_error_callback(self, error): # 语义分析错误回调
         QMessageBox.warning(self.mainWin, '警告', error)
@@ -353,6 +399,15 @@ class Client:
         except Exception as e:
             QMessageBox.warning(self.mainWin, '警告', '语义分析结果写入数据库失败！')
 
+    def save_question(self): # 保存语义分析结果
+        self.file_path, _ = QFileDialog.getSaveFileName(self.mainWin, '保存语义分析结果', '', '*.txt;;All Files (*)')
+        if self.file_path:
+            with open(self.file_path, 'w', encoding='utf-8') as f:
+                for row in self.syntaxTbl:
+                    f.write(row[0] + '\t' + row[1] + '\t' + row[2] + '\t' + row[3] + '\t' + row[4] + '\n')
+            QMessageBox.information(self.mainWin, '提示', '保存成功！')
+        else:
+            QMessageBox.warning(self.mainWin, '警告', '非法保存路径！')
 
     # SECTION: Question
 
@@ -444,6 +499,13 @@ class Client:
         else:
             QMessageBox.critical(self.mainWin, '错误', '未知数据类型！')
             return
+
+#深度优先遍历树形结构
+def traverse_tree(item, depth=0):
+    result = '\t' * depth + item.text(0) + ' ' + item.text(1) + '\n'
+    for i in range(item.childCount()):
+        result += traverse_tree(item.child(i), depth + 1)
+    return result
 
 #将Parser结果转为树形结构
 def add_items(parent, elements):#递归添加子项

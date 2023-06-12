@@ -1,0 +1,20 @@
+paper 2023年基本语文常识试卷
+paper 
+	questionheader 一、填空题:
+	questions 
+		question 1.昨天我去了一家____店买手表。
+		answer 
+			answer 答案:钟表
+		question 2.我家的____是一只小狗。
+		answer 
+			answer 答案:宠物
+	questionheader 二、判断题:
+	questions 
+		question 3.中国的首都是北京。
+		answer 
+			answer 答案:正确
+	questionheader 三、选择题:
+	questions 
+		question 4.以下哪个国家不属于欧洲? A.法国  B.英国  C.美国  D.德国
+		answer 
+			answer 答案:C

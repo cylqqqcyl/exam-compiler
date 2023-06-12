@@ -1114,6 +1114,21 @@ background-color: rgba(255, 255, 255, 0);</string>
           </widget>
          </item>
          <item>
+          <widget class="QLabel" name="label_10">
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>单词表</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QTableWidget" name="lexemeTbl">
            <property name="font">
             <font>
@@ -1124,11 +1139,17 @@ background-color: rgba(255, 255, 255, 0);</string>
            <property name="editTriggers">
             <set>QAbstractItemView::NoEditTriggers</set>
            </property>
+           <attribute name="horizontalHeaderCascadingSectionResizes">
+            <bool>false</bool>
+           </attribute>
            <attribute name="horizontalHeaderMinimumSectionSize">
-            <number>568</number>
+            <number>330</number>
            </attribute>
            <attribute name="horizontalHeaderDefaultSectionSize">
-            <number>568</number>
+            <number>376</number>
+           </attribute>
+           <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+            <bool>true</bool>
            </attribute>
            <column>
             <property name="text">
@@ -1152,6 +1173,33 @@ background-color: rgba(255, 255, 255, 0);</string>
              </font>
             </property>
            </column>
+           <column>
+            <property name="text">
+             <string>位置(行)</string>
+            </property>
+            <property name="font">
+             <font>
+              <family>微软雅黑</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+           </column>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="saveScanResultBtn">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>保存单词表</string>
+           </property>
           </widget>
          </item>
         </layout>
@@ -1336,6 +1384,22 @@ background-color: rgba(255, 255, 255, 0);</string>
            </column>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="saveParserTreeBtn">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>保存语法树</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
        <widget class="QWidget" name="pageSyntax">
@@ -1468,6 +1532,21 @@ background-color: rgba(255, 255, 255, 0);</string>
           </widget>
          </item>
          <item>
+          <widget class="QLabel" name="label_11">
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>题目列表</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QTableWidget" name="syntaxTbl">
            <property name="font">
             <font>
@@ -1559,7 +1638,26 @@ background-color: rgba(255, 255, 255, 0);</string>
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="saveQuestionBtn">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>保存题目至文件</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="addQuestionBtn">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="font">
             <font>
              <family>微软雅黑</family>

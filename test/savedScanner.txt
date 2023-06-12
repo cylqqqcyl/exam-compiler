@@ -1,0 +1,17 @@
+2023年基本语文常识试卷	HEADER1
+一、填空题:	QUESTIONHEADER2
+1.昨天我去了一家____店买手表。	QUESTION3
+答案:钟表	ANSWER3
+2.我家的____是一只小狗。	QUESTION4
+答案:宠物	ANSWER4
+二、判断题:	QUESTIONHEADER5
+3.中国的首都是北京。	QUESTION6
+答案:正确	ANSWER6
+三、选择题:	QUESTIONHEADER7
+四、简答题:	QUESTIONHEADER7
+4.以下哪个国家不属于欧洲?	QUESTION8
+A.法国 	OPTION9
+B.英国 	OPTION9
+C.美国 	OPTION9
+D.德国	OPTION9
+答案:C	ANSWER10
