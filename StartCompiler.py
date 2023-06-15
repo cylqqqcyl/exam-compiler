@@ -250,13 +250,54 @@ class Client:
                             '5. 题型形如“一、XX题[:：]”')
 
     def save_scanner_result(self): # 保存词法分析结果
+        QUESTIONS = []
+        QUESTION_HEADERS = []
+        HEADERS = []
+        ANSWERS = []
+        OPTIONS = []
         if self.mainWin.scannerCheck.text() == '已完成':
             self.file_path, _ = QFileDialog.getSaveFileName(self.mainWin, '保存词法分析结果', '', '*.txt;;All Files (*)')
             if self.file_path:
                 with open(self.file_path, 'w', encoding='utf-8') as f:
+                    f.write('——————————————单词串——————————————\n')
                     for i in range(self.mainWin.lexemeTbl.rowCount()):
-                        f.write(self.mainWin.lexemeTbl.item(i, 0).text() + '\t' + self.mainWin.lexemeTbl.item(i, 1).text() + '\t'+
-                                self.mainWin.lexemeTbl.item(i, 2).text() + '\n')
+                        if self.mainWin.lexemeTbl.item(i, 1).text() == 'QUESTION':
+                            QUESTIONS.append("["+str(i)+"]"+self.mainWin.lexemeTbl.item(i, 0).text())
+                        elif self.mainWin.lexemeTbl.item(i, 1).text() == 'QUESTIONHEADER':
+                            QUESTION_HEADERS.append("["+str(i)+"]"+self.mainWin.lexemeTbl.item(i, 0).text())
+                        elif self.mainWin.lexemeTbl.item(i, 1).text() == 'HEADER':
+                            HEADERS.append("["+str(i)+"]"+self.mainWin.lexemeTbl.item(i, 0).text())
+                        elif self.mainWin.lexemeTbl.item(i, 1).text() == 'ANSWER':
+                            ANSWERS.append("["+str(i)+"]"+self.mainWin.lexemeTbl.item(i, 0).text())
+                        elif self.mainWin.lexemeTbl.item(i, 1).text() == 'OPTION':
+                            OPTIONS.append("["+str(i)+"]"+self.mainWin.lexemeTbl.item(i, 0).text())
+                        f.write("["+str(i)+"]"+self.mainWin.lexemeTbl.item(i, 0).text() + '\n')
+                    f.write('——————————————单词表——————————————\n')
+
+                    f.write('试卷头HEADER：\n\n')
+                    for i in HEADERS:
+                        f.write(i + '\n')
+                    f.write('\n')
+
+                    f.write('题型头QUESTIONHEADER：\n\n')
+                    for i in QUESTION_HEADERS:
+                        f.write(i + '\n')
+                    f.write('\n')
+
+                    f.write('题目QUESTION：\n\n')
+                    for i in QUESTIONS:
+                        f.write(i + '\n')
+                    f.write('\n')
+
+                    f.write('选项OPTION：\n\n')
+                    for i in OPTIONS:
+                        f.write(i + '\n')
+                    f.write('\n')
+
+                    f.write('答案ANSWER：\n\n')
+                    for i in ANSWERS:
+                        f.write(i + '\n')
+                    f.write('\n')
                 QMessageBox.information(self.mainWin, '提示', '保存成功！')
             else:
                 QMessageBox.warning(self.mainWin, '警告', '非法保存路径！')
