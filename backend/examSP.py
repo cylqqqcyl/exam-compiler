@@ -193,15 +193,15 @@ class ExamScanner:  # 词法分析器
         tokens = []
         while True:
             # 读取一个token
-            tok = lexer.token() # 该函数每
+            tok = lexer.token() # 该函数每调用一次返回一个token
             if not tok:
                 break
             tokens.append((tok.value, tok.type, tok.lineno))
-        if hasattr(lexer, 'errors') and lexer.errors:
+        if hasattr(lexer, 'errors') and lexer.errors: # 出错
             print(tokens)
             errors = lexer.errors
             lexer.errors = []
-            raise LexicalError(errors)
+            raise LexicalError(errors) # 抛出词法分析错误的异常类
         # 返回token列表
         return tokens
 
@@ -235,31 +235,31 @@ class ExamParser:  # 语法分析器
 def parse_ast(node):  # 递归将AST转为字典
     if not isinstance(node, tuple):
         return node
-    if node[0] == 'paper':
+    if node[0] == 'paper': # 试卷类型
         return {
             'type': 'paper',
             'title': node[1],
-            'content': parse_ast(node[2])
+            'content': parse_ast(node[2]) # 递归解析
         }
-    elif node[0] == 'questionheaders':
+    elif node[0] == 'questionheaders': # 解析每一个问题类型
         return [parse_ast(child) for child in node[1:]]
-    elif node[0] == 'questionheader':
+    elif node[0] == 'questionheader': # 解析问题头
         return {
             'type': 'questionheader',
             'title': node[1],
-            'questions': parse_ast(node[2])
+            'questions': parse_ast(node[2]) # 递归解析内容
         }
-    elif node[0] == 'questions':
+    elif node[0] == 'questions': # 解析每一个问题
         return [parse_ast(child) for child in node[1:]]
-    elif node[0] == 'question':
+    elif node[0] == 'question': # 解析问题
         content = node[1]
         answer = parse_ast(node[2])
         # Check if the next node is 'options'
-        if len(node) > 3 and node[2][0] == 'options':
-            options = parse_ast(node[2])
-            answer = parse_ast(node[3])
+        if len(node) > 3 and node[2][0] == 'options': # 选择题
+            options = parse_ast(node[2]) # 解析选项
+            answer = parse_ast(node[3]) # 解析答案
             # Append options to the question content
-            content += ' ' + ' '.join(options['choices'])
+            content += ' ' + ' '.join(options['choices']) # 将选项放在题目内容中一并展示
         return {
             'type': 'question',
             'content': content,
@@ -267,13 +267,13 @@ def parse_ast(node):  # 递归将AST转为字典
         }
     elif node[0] == 'answer':
         return {
-            'type': 'answer',
+            'type': 'answer', # 解析答案
             'content': node[1]
         }
     elif node[0] == 'options':
         return {
             'type': 'options',
-            'choices': filter(lambda x: x != 'options', node[1:])
+            'choices': filter(lambda x: x != 'options', node[1:]) # 过滤多余的option字样
         }
     else:
         return node

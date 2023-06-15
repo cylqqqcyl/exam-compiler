@@ -67,6 +67,7 @@ class Database:
     # SECTION: Question
 
     def add_question(self, q_content, q_origin, q_type, q_answer):
+        # 插入语句
         sql = "INSERT INTO question (q_content, q_origin, q_type, q_answer) VALUES (?, ?, ?, ?)"
         if self.conn:
             try:
@@ -78,6 +79,7 @@ class Database:
                 self.conn.commit()
 
     def read_question(self,limit,offset=0):
+        # 查询语句
         sql = "SELECT * FROM question LIMIT %d OFFSET %d" % (limit, offset)
         if self.conn:
             try:
@@ -91,6 +93,7 @@ class Database:
                 return book_table
 
     def get_question_num(self, q_content='', q_origin='', q_type=''):
+        # 聚合语句，将问题分组
         sql = "SELECT COUNT(*) FROM question WHERE q_content LIKE %s AND q_origin LIKE %s AND q_type LIKE %s"
         sql = sql % (
             "'%" + q_content + "%'", "'%" + q_origin + "%'", "'%" + q_type + "%'")
