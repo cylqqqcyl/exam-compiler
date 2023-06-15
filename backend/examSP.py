@@ -41,30 +41,32 @@ class ParserError(Exception):
     def __str__(self):
         return self.message # str方法，在输出该类对象时输出错误信息
 
-def init_lexer(lexer): # 初始化行号
+
+def init_lexer(lexer):  # 初始化行号
     lexer.lineno = 1
 
+
 def t_error(t):
-    # 报错
+    # 报错处理
     match = None
-    error_buffer = "" # TODO
-    current_pos = t.lexer.lexpos
-    while t.lexer.lexpos < len(t.lexer.lexdata):
+    error_buffer = ""  # 用于记录错误的字符串
+    current_pos = t.lexer.lexpos  # 记录当前位置
+    while current_pos < len(t.lexer.lexdata):  # 从当前位置开始逐个字符匹配
         for token_name in tokens:
-            rule = globals()[f"t_{token_name}"]
-            match = re.match(rule, t.lexer.lexdata[current_pos:])
+            rule = globals()[f"t_{token_name}"]  # 获取对应的匹配规则
+            match = re.match(rule, t.lexer.lexdata[current_pos:])  # 匹配成功则跳出循环
             if match:
                 break
         if match:
-            t.lexer.skip(len(error_buffer))
+            t.lexer.skip(len(error_buffer))  # 跳过错误的字符
             break
         else:
-            error_buffer += t.lexer.lexdata[current_pos]
-            current_pos += 1
-    if not hasattr(t.lexer, 'errors'):
+            error_buffer += t.lexer.lexdata[current_pos]  # 记录错误的字符
+            current_pos += 1  # 继续匹配下一个字符
+    if not hasattr(t.lexer, 'errors'):  # 如果没有错误列表则创建
         t.lexer.errors = []
         t.lexer.errors.append([t.lexer.lineno, error_buffer])
-    else:
+    else:  # 如果有错误列表则添加
         t.lexer.errors.append([t.lexer.lineno, error_buffer])
 
 # 需要复杂处理动作的单词的例子
@@ -72,7 +74,8 @@ def t_newline(t): # 记录行号
     r'\n+' # 字符串表示匹配的模式
     t.lexer.lineno += len(t.value) # 动作是在匹配到换行时将行号增加，实现对行号的记录
 
-#build the lexer
+
+# build the lexer
 import ply.lex as lex
 lexer = lex.lex() # 实例化lex对象，在之后调用进行词法分析
 #################### 词法分析器 ####################
@@ -98,7 +101,8 @@ def p_paper(p): # 解析试卷
     # 第二个元素是HEADER节点
     # 第三个元素是questionheaders节点
 
-def p_questionheaders(p): # 题型列表
+
+def p_questionheaders(p):  # 题型列表
     '''questionheaders : questionheader questionheaders
                         | questionheader'''
     if len(p) > 2: # 当len大于2时，是questionheaders : questionheader questionheaders
@@ -109,14 +113,16 @@ def p_questionheaders(p): # 题型列表
         # 此时没有第二个问题，故直接产生树结构
         p[0] = ('questionheaders', p[1])
 
-def p_questionheader(p): #题型
+
+def p_questionheader(p):  # 题型
     '''questionheader : QUESTIONHEADER questions'''
     p[0] = ('questionheader', p[1], p[2])
     # 树结构，第一个元素为节点类型标记
     # 第二个元素是QUESTIONHEADER节点
     # 第三个元素是questions节点
 
-def p_questions(p): #题目列表
+
+def p_questions(p):  # 题目列表
     '''questions : question questions
                     | question'''
     if len(p) > 2:# 当len大于2时，是questions : question questions
@@ -127,7 +133,8 @@ def p_questions(p): #题目列表
         # 此时没有第二个问题，故直接产生树结构
         p[0] = ('questions', p[1])
 
-def p_question(p): #题型
+
+def p_question(p):  # 题型
     '''question : QUESTION
                     | QUESTION options
                     | QUESTION answer
@@ -142,7 +149,8 @@ def p_question(p): #题型
     else: # 第一个产生式
         p[0] = ('question', p[1])
 
-def p_answer(p): #答案
+
+def p_answer(p):  # 答案
     '''answer : ANSWER'''
     if len(p) > 1: # 答案的树结构
         p[0] = ('answer', p[1])
@@ -150,7 +158,7 @@ def p_answer(p): #答案
         p[0] = ('answer', '')
 
 
-def p_options(p): #选项
+def p_options(p):  # 选项
     '''options : OPTION options
                | OPTION'''
     if len(p) > 2: # 当len大于2时，是options : OPTION options
@@ -167,16 +175,17 @@ def p_error(p): # 报错
     # 抛出自定义的语法分析异常
     raise ParserError("Syntax error in {} at line {}".format(p, p.lexer.lineno))
 
+
 # 构建解析器
 import ply.yacc as yacc
 parser = yacc.yacc() # 实例化yacc对象，在之后调用进行语法分析
 #################### 语法分析器 ####################
 
-class ExamScanner:
+class ExamScanner:  # 词法分析器
     def __init__(self, filepath):
         self.filepath = filepath # 初始化，指定解析路径
 
-    def scan(self):
+    def scan(self):  # 扫描
         with open(self.filepath, 'r', encoding='utf-8') as file:
             content = file.read()
 
@@ -196,11 +205,12 @@ class ExamScanner:
         # 返回token列表
         return tokens
 
-class ExamParser:
+
+class ExamParser:  # 语法分析器
     def __init__(self, filepath):
         self.filepath = filepath
 
-    def parse(self, raw=False):
+    def parse(self, raw=False):  # 解析
         with open(self.filepath, 'r', encoding='utf-8') as file:
             content = file.read()
         # 创建一个StringIO对象用于接收输出
@@ -209,7 +219,7 @@ class ExamParser:
         old_stdout = sys.stderr
         sys.stderr = process_output
 
-        lexer.lineno = 1 # 初始化行号
+        lexer.lineno = 1  # 初始化行号
         if raw:
             result = parser.parse(content)
             # 恢复原来的stdout
@@ -221,7 +231,8 @@ class ExamParser:
             sys.stderr = old_stdout
             return parse_ast(result), process_output.getvalue()
 
-def parse_ast(node): # 将AST转为字典
+
+def parse_ast(node):  # 递归将AST转为字典
     if not isinstance(node, tuple):
         return node
     if node[0] == 'paper':
@@ -267,25 +278,25 @@ def parse_ast(node): # 将AST转为字典
     else:
         return node
 
-def extract_questions(elements, paper_title, question_type=None): # 从AST中提取题目
+
+def extract_questions(elements, paper_title, question_type=None):  # 从AST中提取题目
     questions = []
     if isinstance(elements, dict):
         for key, value in elements.items():
             if key == "type" and value == "question":  # 找到题目的字典
-                question_content = elements.get("content")[2:] # 删去题目前面的编号
-                question_answer = elements.get("answer").get("content")[3:] # 删去答案前面的“答案：”
+                question_content = elements.get("content")[2:]  # 删去题目前面的编号
+                question_answer = elements.get("answer").get("content")[3:]  # 删去答案前面的“答案：”
                 question_type = question_type
                 question_number = elements.get("content").split(".")[0] if "content" in elements else None
                 questions.append([question_number, question_content, paper_title, question_type, question_answer])
             if key == "type" and value == "questionheader":  # 找到题型的字典
-                question_type = elements.get("title").split("、")[-1][:-1] # 掐头去尾只留下题型
+                question_type = elements.get("title").split("、")[-1][:-1]  # 掐头去尾只留下题型
             elif isinstance(value, dict) or isinstance(value, list):
-                questions.extend(extract_questions(value, paper_title, question_type)) # 递归遍历子字典或列表
+                questions.extend(extract_questions(value, paper_title, question_type))  # 递归遍历子字典或列表
     elif isinstance(elements, list):
         for subvalue in elements:
-            questions.extend(extract_questions(subvalue, paper_title, question_type)) # 递归遍历子字典或列表
+            questions.extend(extract_questions(subvalue, paper_title, question_type))  # 递归遍历子字典或列表
     return questions
-
 
 
 if __name__ == "__main__":
