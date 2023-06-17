@@ -79,7 +79,8 @@ class Client:
         self.fileView = FileView()
         self.processView = ProcessView()
 
-        self.file_path = None
+        self.file_load_path = None
+        self.file_save_path = None
         self.file_modified = False
 
         self.ast = None
@@ -168,11 +169,11 @@ class Client:
     # SECTION: 查看/编辑文件
 
     def view_file(self): # 查看文件
-        if self.file_path:
-            self.fileView.uploadDisplay.setText(self.file_path)
-            self.fileView.filepath = self.file_path
+        if self.file_load_path:
+            self.fileView.uploadDisplay.setText(self.file_load_path)
+            self.fileView.filepath = self.file_load_path
             self.fileView.fileBrowser.clear()
-            with open(self.file_path, 'r', encoding='utf-8') as f:
+            with open(self.file_load_path, 'r', encoding='utf-8') as f:
                 content = f.read()
             self.fileView.fileBrowser.setText(content)
             self.file_modified = self.fileView.exec()
@@ -189,11 +190,11 @@ class Client:
     # SECTION: Scanner
 
     def uploadFile(self): # 上传文件
-        self.file_path, _ = QFileDialog.getOpenFileName(self.mainWin, '选择文件', '', '*.txt;;*.doc;;*.docx;;*.pdf;;All Files (*)')
-        if self.file_path:
-            self.mainWin.uploadDisplay.setText(self.file_path)
-            self.mainWin.uploadDisplay_2.setText(self.file_path)
-            self.mainWin.uploadDisplay_3.setText(self.file_path)
+        self.file_load_path, _ = QFileDialog.getOpenFileName(self.mainWin, '选择文件', '', '*.txt;;*.doc;;*.docx;;*.pdf;;All Files (*)')
+        if self.file_load_path:
+            self.mainWin.uploadDisplay.setText(self.file_load_path)
+            self.mainWin.uploadDisplay_2.setText(self.file_load_path)
+            self.mainWin.uploadDisplay_3.setText(self.file_load_path)
             self.mainWin.scannerCheck.setText('未完成')
             self.mainWin.scannerCheck.setStyleSheet("color: #ff0000;")
             self.mainWin.scannerCheck_2.setText('未完成')
@@ -202,14 +203,14 @@ class Client:
             self.mainWin.parserCheck.setStyleSheet("color: #ff0000;")
 
     def start_scanner(self): # 词法分析
-        if not self.file_path:
+        if not self.file_load_path:
             QMessageBox.warning(self.mainWin, '警告', '请先选择文件！')
             return
         self.mainWin.startScannerBtn.setEnabled(False)
         self.mainWin.startParserBtn.setEnabled(False)
         self.mainWin.startSyntaxBtn.setEnabled(False)
 
-        self.scannerThread = ScannerThread(self.file_path)
+        self.scannerThread = ScannerThread(self.file_load_path)
         self.scannerThread.scannerSignal.connect(self.scanner_callback)
         self.scannerThread.scannerErrorSignal.connect(self.scanner_error_callback)
         self.scannerThread.start()
@@ -256,9 +257,9 @@ class Client:
         ANSWERS = []
         OPTIONS = []
         if self.mainWin.scannerCheck.text() == '已完成':
-            self.file_path, _ = QFileDialog.getSaveFileName(self.mainWin, '保存词法分析结果', '', '*.txt;;All Files (*)')
-            if self.file_path:
-                with open(self.file_path, 'w', encoding='utf-8') as f:
+            self.file_save_path, _ = QFileDialog.getSaveFileName(self.mainWin, '保存词法分析结果', '', '*.txt;;All Files (*)')
+            if self.file_save_path:
+                with open(self.file_save_path, 'w', encoding='utf-8') as f:
                     f.write('——————————————单词串——————————————\n')
                     for i in range(self.mainWin.lexemeTbl.rowCount()):
                         if self.mainWin.lexemeTbl.item(i, 1).text() == 'QUESTION':
@@ -307,7 +308,7 @@ class Client:
     # SECTION: Parser
 
     def start_parser(self): # 语法分析
-        if not self.file_path:
+        if not self.file_load_path:
             QMessageBox.warning(self.mainWin, '警告', '请先选择文件！')
             return
         if not self.mainWin.scannerCheck.text() == '已完成':
@@ -317,7 +318,7 @@ class Client:
         self.mainWin.startParserBtn.setEnabled(False)
         self.mainWin.startSyntaxBtn.setEnabled(False)
 
-        self.parserThread = ParserThread(self.file_path)
+        self.parserThread = ParserThread(self.file_load_path)
         self.parserThread.parserSignal.connect(self.parser_callback)
         self.parserThread.processSignal.connect(self.process_callback)
         self.parserThread.parserErrorSignal.connect(self.parser_error_callback)
@@ -357,9 +358,9 @@ class Client:
 
     def save_parser_tree(self): # 保存语法分析结果
         if self.mainWin.parserCheck.text() == '已完成':
-            self.file_path, _ = QFileDialog.getSaveFileName(self.mainWin, '保存语法分析结果', '', '*.txt;;All Files (*)')
-            if self.file_path:
-                with open(self.file_path, 'w', encoding='utf-8') as f:
+            self.file_save_path, _ = QFileDialog.getSaveFileName(self.mainWin, '保存语法分析结果', '', '*.txt;;All Files (*)')
+            if self.file_save_path:
+                with open(self.file_save_path, 'w', encoding='utf-8') as f:
                     tree_text = ""
                     root = self.mainWin.parserTree.invisibleRootItem()
                     for i in range(root.childCount()):
@@ -384,7 +385,7 @@ class Client:
 
     # SECTION: Syntax
     def start_syntax(self): # 开始语义分析
-        if not self.file_path:
+        if not self.file_load_path:
             QMessageBox.warning(self.mainWin, '警告', '请先选择文件！')
             return
         if not self.mainWin.scannerCheck.text() == '已完成':
@@ -441,9 +442,9 @@ class Client:
             QMessageBox.warning(self.mainWin, '警告', '语义分析结果写入数据库失败！')
 
     def save_question(self): # 保存语义分析结果
-        self.file_path, _ = QFileDialog.getSaveFileName(self.mainWin, '保存语义分析结果', '', '*.txt;;All Files (*)')
-        if self.file_path:
-            with open(self.file_path, 'w', encoding='utf-8') as f:
+        self.file_save_path, _ = QFileDialog.getSaveFileName(self.mainWin, '保存语义分析结果', '', '*.txt;;All Files (*)')
+        if self.file_save_path:
+            with open(self.file_save_path, 'w', encoding='utf-8') as f:
                 for row in self.syntaxTbl:
                     f.write(row[0] + '\t' + row[1] + '\t' + row[2] + '\t' + row[3] + '\t' + row[4] + '\n')
             QMessageBox.information(self.mainWin, '提示', '保存成功！')

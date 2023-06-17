@@ -159,7 +159,7 @@ class ExamScanner:  # 词法分析器
     def scan(self):  # 扫描
         with open(self.filepath, 'r', encoding='utf-8') as file:
             content = file.read()
-
+        lexer.lineno = 1  # 初始化行号
         lexer.input(content)
         tokens = []
         while True:
